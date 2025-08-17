@@ -13,8 +13,4 @@
         a.textContent = aText[i];
         buttons.appendChild(a);
     }
-
-    function clickBtn() {
-
-    }
 }
