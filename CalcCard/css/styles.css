@@ -1,0 +1,346 @@
+body {
+  margin: 0;
+  height: 100vh;
+  display: block;
+  overflow: hidden;
+  user-select: none;
+  -webkit-user-select: none;
+  -moz-user-select: none;
+  -ms-user-select: none;
+}
+
+#top-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+#title {
+  height: 14vh;
+  font-size: clamp(1.5rem, 8vw, 12vh);
+  margin-top: 2vh;
+  margin-bottom: 3vh;
+  text-align: center;
+  overflow: hidden;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#btnSound {
+  position: absolute;
+  top: 4vh;
+  left: calc(100vw - 14vh);
+  width: 10vh;
+  height: 10vh;
+  background-color: lightgray;
+  background-size: cover;
+  background-position: center;
+  z-index: 2;
+  cursor: pointer;
+}
+
+.mute {
+  background-image: url("../img/VolOFF.png");
+}
+
+.on {
+  background-image: url("../img/VolON.png");
+}
+
+#subtitle {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 14vh;
+  text-align: center;
+  margin-bottom: 2vh;
+}
+
+#subtitle .label {
+  width: 40vw;
+  height: 14vh;
+  margin: 0 5vw;
+  font-size: clamp(1.5rem, 7.5vw, 12vh);
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  display: flex;
+}
+
+#buttons {
+  height: 65vh;
+}
+
+#buttons>div {
+  height: 14vh;
+  position: relative;
+  text-align: center;
+  margin-bottom: 2vh;
+}
+
+#buttons button {
+  width: 40vw;
+  height: 14vh;
+  margin: 0 5vw;
+  display: inline-block;
+  vertical-align: top;
+  cursor: pointer;
+}
+
+#b1 button {
+  background-color: rgb(250, 128, 114);
+}
+
+#b2 button {
+  background-color: rgb(152, 251, 152);
+}
+
+#b3 button {
+  background-color: rgb(135, 206, 250);
+}
+
+#b4 button {
+  background-color: rgb(105, 105, 105);
+}
+
+[id *="practice"] {
+  font-size: clamp(1.5rem, 3vw, 6vh);
+  overflow: hidden;
+}
+
+[id *="challenge"] {
+  font-size: clamp(2rem, 4.5vw, 8vh);
+  overflow: hidden;
+}
+
+.trophyLabel {
+  position: absolute;
+  display: inline-flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  top: 50%;
+  left: 50%;
+  height: 14vh;
+  width: 6.5vw;
+  font-size: clamp(1rem, 1.5vw, 3vh);
+  transform: translate(-50%, -50%);
+  border: 4px solid dimgray;
+  border-radius: 50%;
+}
+
+#quiz-page {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  text-align: center;
+}
+
+#upper {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 46vh;
+  text-align: center;
+  margin-top: 2vh;
+  margin-bottom: 2vh;
+}
+
+#left {
+  display: block;
+  justify-content: center;
+  align-items: center;
+  height: 46vh;
+  width: 13vw;
+  margin: 0 1vw;
+}
+
+.left_label {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 13vw;
+  height: 20vh;
+  margin-bottom: 2vh;
+}
+
+#remain_time {
+  margin-top: 2vh;
+  overflow: hidden;
+  width: 95%;
+}
+
+.timerON {
+  border: 4px solid black;
+  background-color: white;
+}
+
+.timerOFF {
+  background-color: transparent;
+}
+
+.showTimer {
+  font-size: clamp(2rem, 4.5vw, 8vh);
+}
+
+.showOnceMore {
+  font-size: clamp(0.5rem, 2vw, 4vh);
+  color: black;
+  background-color: greenyellow;
+  cursor: pointer;
+}
+
+#remain_quiz {
+  display: flex;
+  position: relative;
+  overflow: hidden;
+  width: 95%;
+  border: 4px solid black;
+  background-color: white;
+}
+
+#remain_quiz_num {
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  transform: translate(-50%, -50%);
+  font-size: clamp(2rem, 6vw, 7vh);
+  color: black;
+}
+
+.quiz_num {
+  font-weight: bold;
+}
+
+.finish {
+  width: 100%;
+  height: 100%;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+}
+
+#remain_quiz_label_top_left {
+  position: absolute;
+  top: 0;
+  left: 2%;
+  font-size: clamp(1rem, 3vw, 3.5vh);
+  color: black;
+}
+
+#remain_quiz_label_bottom_right {
+  position: absolute;
+  bottom: 0;
+  right: 2%;
+  font-size: clamp(1rem, 3vw, 3.5vh);
+  color: black;
+}
+
+#center {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  white-space: pre-line;
+  /*改行許可*/
+  height: 46vh;
+  width: 70vw;
+  border: 4px solid black;
+  background-color: white;
+}
+
+.centerBig {
+  font-size: clamp(2rem, 18vw, 40vh);
+}
+
+.centerSmall {
+  font-size: clamp(2rem, 8vw, 10vh);
+}
+
+#right {
+  display: block;
+  justify-content: center;
+  align-items: center;
+  height: 46vh;
+  width: 13vw;
+  margin: 0 1vw;
+}
+
+.right_label {
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
+  width: 13vw;
+  height: 20vh;
+  margin-bottom: 2vh;
+}
+
+#mark_label {
+  margin-top: 2vh;
+  font-family: "HGPｺﾞｼｯｸE", sans-serif;
+  font-size: clamp(2rem, 8vw, 16vh);
+  font-weight: 900;
+  color: red;
+  overflow: hidden;
+}
+
+#message_label {
+  font-size: clamp(1.5rem, 3.5vw, 7vh);
+  width: 95%;
+  border: 4px solid black;
+  background-color: white;
+}
+
+#lower {
+  display: block;
+  justify-content: center;
+  align-items: center;
+  height: 46vh;
+  text-align: center;
+  margin-top: 4vh;
+  margin-bottom: 2vh;
+}
+
+#btn1 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 20vh;
+  margin-top: 2vh;
+}
+
+#btn2 {
+  display: flex;
+  justify-content: space-between;
+  align-items: center;
+  height: 20vh;
+  margin-top: 4vh;
+  margin-bottom: 2vh;
+}
+
+.answerBtn {
+  width: 8vw;
+  height: 14vh;
+  margin: 0 1vw;
+  background-color: yellow;
+}
+
+#btn1 .answerBtn {
+  font-size: clamp(1.5rem, 6vw, 8vh);
+}
+
+#btn2 .answerBtn {
+  font-size: clamp(0.5rem, 3.5vw, 8vh);
+}
+
+.cursor {
+  cursor: pointer;
+}
+
+.invisible {
+  display: none;
+}
