@@ -19,7 +19,6 @@ body {
   height: 14vh;
   font-size: clamp(1.5rem, 8vw, 12vh);
   margin-top: 2vh;
-  margin-bottom: 3vh;
   text-align: center;
   overflow: hidden;
   display: flex;
@@ -49,19 +48,21 @@ body {
 }
 
 #subtitle {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
   height: 14vh;
-  text-align: center;
+  width: 90%;
+  display: grid;
+  grid-template-columns: 5fr 1fr 5fr;
+  grid-template-rows: repeat(4, auto);
+  justify-items: center;
+  align-items: stretch;
   margin-bottom: 2vh;
 }
 
-#subtitle .label {
-  width: 40vw;
-  height: 14vh;
+#subtitle span {
+  width: 100%;
+  height: 100%;
   margin: 0 5vw;
-  font-size: clamp(1.5rem, 7.5vw, 12vh);
+  font-size: clamp(1.5rem, 7.5vw, 10vh);
   justify-content: center;
   align-items: center;
   text-align: center;
@@ -69,38 +70,40 @@ body {
 }
 
 #buttons {
-  height: 65vh;
-}
-
-#buttons>div {
-  height: 14vh;
-  position: relative;
-  text-align: center;
-  margin-bottom: 2vh;
+  height: 62vh;
+  width: 90%;
+  display: grid;
+  grid-template-columns: 5fr 1fr 5fr;
+  grid-template-rows: repeat(4, auto);
+  justify-items: center;
+  align-items: stretch;
+  row-gap: 1rem;
+  margin-bottom: 6vh;
 }
 
 #buttons button {
-  width: 40vw;
-  height: 14vh;
-  margin: 0 5vw;
-  display: inline-block;
-  vertical-align: top;
+  width: 100%;
+  padding: 1rem;
+  display: flex;
+  justify-content: center;
+  align-items: center;
+  text-align: center;
   cursor: pointer;
 }
 
-#b1 button {
+.b1 {
   background-color: rgb(250, 128, 114);
 }
 
-#b2 button {
+.b2 {
   background-color: rgb(152, 251, 152);
 }
 
-#b3 button {
+.b3 {
   background-color: rgb(135, 206, 250);
 }
 
-#b4 button {
+.b4 {
   background-color: rgb(105, 105, 105);
 }
 
@@ -115,19 +118,25 @@ body {
 }
 
 .trophyLabel {
-  position: absolute;
-  display: inline-flex;
+  display: flex;
+  justify-items: right;
   justify-content: center;
   align-items: center;
   text-align: center;
-  top: 50%;
-  left: 50%;
-  height: 14vh;
-  width: 6.5vw;
+  height: 100%;
+  aspect-ratio: 1/1;
   font-size: clamp(1rem, 1.5vw, 3vh);
-  transform: translate(-50%, -50%);
-  border: 4px solid dimgray;
+  border: 4px solid;
   border-radius: 50%;
+}
+
+.trophyON {
+  border-color: dimgray;
+}
+
+.trophyOFF {
+  color: transparent;
+  border-color: transparent;
 }
 
 #quiz-page {
@@ -142,6 +151,7 @@ body {
   justify-content: space-between;
   align-items: center;
   height: 46vh;
+  width: 100%;
   text-align: center;
   margin-top: 2vh;
   margin-bottom: 2vh;
@@ -300,8 +310,6 @@ body {
   align-items: center;
   height: 46vh;
   text-align: center;
-  margin-top: 4vh;
-  margin-bottom: 2vh;
 }
 
 #btn1 {

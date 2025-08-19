@@ -47,25 +47,26 @@
         const subtitle = document.getElementById("subtitle");
         const label1 = document.createElement("span");
         label1.textContent = "れんしゅう"
-        label1.className = "label";
+        const space = document.createElement("div");
         const label2 = document.createElement("span");
         label2.textContent = "チャレンジ"
-        label2.className = "label";
         subtitle.appendChild(label1);
+        subtitle.appendChild(space);
         subtitle.appendChild(label2);
         //ボタンセット
         const buttonData = [
-            { id: "b1", label: "たしざん くりあがりなし" },
-            { id: "b2", label: "たしざん くりあがりあり" },
-            { id: "b3", label: "ひきざん くりさがりなし" },
-            { id: "b4", label: "ひきざん くりさがりあり" }
+            { cls: "b1", label: "たしざん くりあがりなし" },
+            { cls: "b2", label: "たしざん くりあがりあり" },
+            { cls: "b3", label: "ひきざん くりさがりなし" },
+            { cls: "b4", label: "ひきざん くりさがりあり" }
         ];
+        const buttons = document.getElementById("buttons");
         var num = 0;
-        buttonData.forEach(({ id, label }) => {
+        buttonData.forEach(({ cls, label }) => {
             num++;
-            const container = document.getElementById(id);
             const labelBtn = document.createElement("button");
             labelBtn.className = "button-label" + num;
+            labelBtn.classList.add(cls);
             labelBtn.id = "practice" + num;
             labelBtn.textContent = label;
             labelBtn.dataset.mode = num * -1;
@@ -74,8 +75,15 @@
                 startQuiz(this.dataset.mode)
             });
 
+            const trophyLabel = document.createElement("span");
+            trophyLabel.className = "trophyLabel";
+            trophyLabel.id = "trophy" + num;
+            trophyLabel.textContent = "５きゅう";
+            checkTrophy(trophyLabel, num);
+
             const timeBtn = document.createElement("button");
             timeBtn.className = "button-label" + num;
+            timeBtn.classList.add(cls);
             timeBtn.id = "challenge" + num;
             timeBtn.dataset.mode = num;
             timeBtn.addEventListener("click", function () {
@@ -83,14 +91,9 @@
                 startQuiz(this.dataset.mode)
             });
 
-            const trophyLabel = document.createElement("span");
-            trophyLabel.className = "trophyLabel";
-            trophyLabel.id = "trophy" + num;
-            checkTrophy(trophyLabel, num)
-
-            container.appendChild(labelBtn);
-            container.appendChild(timeBtn);
-            container.appendChild(trophyLabel);
+            buttons.appendChild(labelBtn);
+            buttons.appendChild(trophyLabel);
+            buttons.appendChild(timeBtn);
         });
         showRecord(loadRecord());
         document.getElementById("top-page").style.display = 'block';
@@ -615,16 +618,19 @@
         return "なし";
     }
 
+    //トロフィーの表示
     function checkTrophy(obj, mode) {
         let rankStr = checkTrophyName(mode, loadRecord()[mode - 1]);
         obj.textContent = rankStr;
         if (rankStr === "なし") {
-            if (!obj.classList.contains("invisible")) {
-                obj.classList.add("invisible");
+            if (obj.classList.contains("trophyON")) {
+                obj.classList.remove("trophyON");
             }
+            obj.classList.add("trophyOFF");
         } else {
-            if (obj.classList.contains("invisible")) {
-                obj.classList.remove("invisible");
+            if (obj.classList.contains("trophyOFF")) {
+                obj.classList.remove("trophyOFF");
+                obj.classList.add("trophyON")
             }
             if (rankStr.includes("きゅう")) {
                 obj.style.backgroundColor = "rgb(184,115,51)";
