@@ -19,20 +19,20 @@
     /////////インターフェイス生成///////////////////////////////////////////////////////////////////////
     //timer-bg非表示
     HideElementByID("timer-bg", "hidden");
-    
+
     //adjustボタン生成
     const adjStrings = [10, 5, 1, 10, 5, 1];
     const fragmentAdj = document.createDocumentFragment();
-    for(let i = 0; i < adjStrings.length; i++){
+    for (let i = 0; i < adjStrings.length; i++) {
         let adjBtn = document.createElement('div');
         adjBtn.classList.add("adjBtnGroup");
         const adjButton = document.createElement('button');
         adjButton.textContent = '+' + adjStrings[i];
         let text;
-        if(i < 3){
+        if (i < 3) {
             text = 'm' + adjStrings[i];
             adjButton.classList.add("adjBtnM");
-        }else{
+        } else {
             text = 's' + adjStrings[i];
             adjButton.classList.add("adjBtnS");
         }
@@ -49,7 +49,7 @@
     const savedTexts = JSON.parse(localStorage.getItem("setBtnTexts") || "null");
     const setStrings = savedTexts || setStringsDefault;
     const fragmentSet = document.createDocumentFragment();
-    for(let i = 0; i < setStrings.length; i++){
+    for (let i = 0; i < setStrings.length; i++) {
         let setBtn = document.createElement('div');
         setBtn.classList.add("setBtnGroup");
         const stButton = document.createElement('button');
@@ -67,7 +67,7 @@
     const actionColor = ["lightgray", "lightgray", "gray", "red", "orange"];
     const actionID = ["progress", "sound", "setting", "reset", "start"];
     const fragmentAction = document.createDocumentFragment();
-    for(let i = 0; i < actionStrings.length; i++){
+    for (let i = 0; i < actionStrings.length; i++) {
         let actionBtn = document.createElement('div');
         actionBtn.classList.add("actionBtnGroup");
         const actButton = document.createElement('button');
@@ -83,9 +83,9 @@
     //changeボタン20個を生成
     const changeStrings = ["△", "▽", "△", "▽", "△", "▽", "△", "▽", "△", "▽", "△", "▽", "△", "▽", "△", "▽", "△", "▽", "△", "▽"];
     const changeColor = ["gray", "gray", "lightgray", "lightgray", "gray", "gray", "lightgray", "lightgray", "gray", "gray", "lightgray", "lightgray", "gray", "gray", "lightgray", "lightgray", "gray", "gray", "lightgray", "lightgray"];
-    const changeClass = ["b1","b1","b1","b1","b2","b2","b2","b2","b3","b3","b3","b3","b4","b4","b4","b4","b5","b5","b5","b5"];
+    const changeClass = ["b1", "b1", "b1", "b1", "b2", "b2", "b2", "b2", "b3", "b3", "b3", "b3", "b4", "b4", "b4", "b4", "b5", "b5", "b5", "b5"];
     const fragmentChange = document.createDocumentFragment();
-    for(let i = 0; i < changeStrings.length; i++){
+    for (let i = 0; i < changeStrings.length; i++) {
         let changeBtn = document.createElement('div');
         changeBtn.classList.add("changeBtnGroup");
         const changeButton = document.createElement('button');
@@ -104,7 +104,7 @@
     // 文字列のサイズ調整
     function adjustFontSize(element) {
         const text = element.innerText || element.textContent; // 表示する文字
-        const canvas = document.createElement("canvas"); 
+        const canvas = document.createElement("canvas");
         const ctx = canvas.getContext("2d");
 
         let fontSize = 10; // 初期フォントサイズ
@@ -131,6 +131,12 @@
         element.style.fontSize = `${fontSize}px`; // 最終的なサイズを適用
     }
 
+    //ロード前にフォントサイズ調整を実行
+    document.addEventListener("DOMContentLoaded", () => {
+        AdjustStringSize(); // フォントサイズを調整
+        document.body.classList.add("ready"); // 調整が終わってから表示
+    });
+
     // 複数の要素に適用する
     function AdjustStringSize() {
         adjustFontSize(timer);
@@ -138,8 +144,8 @@
         elements1.forEach(element => {
             adjustFontSize(element); // 各要素に対して調整
         });
-        const elements4ClassName = ["b1","b2","b3","b4","b5"];
-        for(let i = 0; i < elements4ClassName.length; i++){
+        const elements4ClassName = ["b1", "b2", "b3", "b4", "b5"];
+        for (let i = 0; i < elements4ClassName.length; i++) {
             const elements4 = document.querySelectorAll("." + elements4ClassName[i]);
             elements4.forEach(element => {
                 adjustFontSize(element); // 各要素に対して調整
@@ -148,13 +154,13 @@
         }
         const actionButtons = document.querySelectorAll(".actionBtn");
         let minFontSize = Infinity;
-    
+
         // 各action-buttonのフォントサイズを調べ、最小値を取得
         actionButtons.forEach(button => {
             const fontSize = parseFloat(window.getComputedStyle(button).fontSize);
             minFontSize = Math.min(minFontSize, fontSize);
         });
-    
+
         // 取得した最小のフォントサイズをすべてのaction-buttonに適用
         actionButtons.forEach(button => {
             button.style.fontSize = `${minFontSize}px`;
@@ -164,7 +170,7 @@
     // ウィンドウサイズ変更時に調整
     window.addEventListener("resize", AdjustStringSize);
     window.addEventListener("load", AdjustStringSize);
-    
+
     /////////ボタンイベント///////////////////////////////////////////////////////////////////////
     //DOM構築完了後のイベント
     document.addEventListener("DOMContentLoaded", () => {
@@ -178,10 +184,10 @@
         const setting = document.getElementById("setting");
         start.addEventListener("click", ClickStart);
         reset.addEventListener("click", ClickReset);
-        audio.addEventListener("click", function(){
+        audio.addEventListener("click", function () {
             ClickAudio(this);
         });
-        progress.addEventListener("click", function(){
+        progress.addEventListener("click", function () {
             ClickProgress(this);
         })
         const elements = document.querySelectorAll(".setBtn");
@@ -196,55 +202,55 @@
         elements3.forEach(element => {
             element.addEventListener("click", () => ClickAdjust(element.id)); // 各要素に対して適用
         });
-        const elements4ClassName = ["b1","b2","b3","b4","b5"];
-        for(let i = 0; i < elements4ClassName.length; i++){
+        const elements4ClassName = ["b1", "b2", "b3", "b4", "b5"];
+        for (let i = 0; i < elements4ClassName.length; i++) {
             const elements4 = document.querySelectorAll("." + elements4ClassName[i]);
             elements4.forEach(element => {
-                element.addEventListener("click", function(){
+                element.addEventListener("click", function () {
                     ClickChangeSet(this);
                 })
             });
         }
-        setting.addEventListener("click",ClickSetting);
+        setting.addEventListener("click", ClickSetting);
     });
-    
+
     //ミリ秒を分・秒に変換
-    function timeToString(millis){
+    function timeToString(millis) {
         const totalSeconds = Math.floor(millis / 1000);
         const m = Math.floor(totalSeconds / 60);  // 分をそのまま取得
         const s = totalSeconds % 60;  // 秒はそのまま
 
         const formatedM = Math.min(m, 99).toString().padStart(2, '0'); // 99分まで
-        const formatedS = s.toString().padStart(2,'0');
-    
+        const formatedS = s.toString().padStart(2, '0');
+
         return `${formatedM}:${formatedS}`;
     }
 
     //00:00文字列をミリ秒に変換
-    function timeToMilliSec(timeString){
+    function timeToMilliSec(timeString) {
         const [minutes, seconds] = timeString.split(":").map(Number);
         return (minutes * 60 + seconds) * 1000;
     }
 
     //スタートボタンをクリックしたときの処理
-    function ClickStart(){
-        if(start.textContent === "スタート"){
+    function ClickStart() {
+        if (start.textContent === "スタート") {
             start.textContent = "ストップ"
             const buttons = document.querySelectorAll(".setBtn");
-            buttons.forEach(btn =>{
+            buttons.forEach(btn => {
                 HideElement(btn, "hidden");
             })
             const buttons2 = document.querySelectorAll(".actionBtn");
-            buttons2.forEach(btn =>{
-                if(btn.id !== "start"){
+            buttons2.forEach(btn => {
+                if (btn.id !== "start") {
                     HideElement(btn, "hidden");
                 }
             })
             const buttons3 = document.querySelectorAll(".adjBtnGroup");
-            buttons3.forEach(btn =>{
+            buttons3.forEach(btn => {
                 HideElement(btn, "hidden");
             })
-            if(timer.textContent === "00:00" || state === "countup"){
+            if (timer.textContent === "00:00" || state === "countup") {
                 state = "countup";
 
                 let startMs = Date.now();   //開始時間ミリ秒
@@ -256,16 +262,16 @@
 
                     timer.textContent = timeToString(elapsedMs);
                 }, 1000);
-            }else if(timer.textContent !== "00:00" || state === "countdown"){
-                if(state !== "countdown"){
+            } else if (timer.textContent !== "00:00" || state === "countdown") {
+                if (state !== "countdown") {
                     state = "countdown"
                     elapsedMs = timeToMilliSec(timer.textContent);
                     totalMs = elapsedMs
                 };
-                if(progress.textContent === "ﾊﾞｰON"){
+                if (progress.textContent === "ﾊﾞｰON") {
                     HideElementByID("timer-bg", "visible");
-                }else if(progress.textContent === "ﾊﾞｰOFF"){
-                    if(!document.getElementById("timer-bg").classList.contains("hidden")){
+                } else if (progress.textContent === "ﾊﾞｰOFF") {
+                    if (!document.getElementById("timer-bg").classList.contains("hidden")) {
                         HideElementByID("timer-bg", "hidden");
                     }
                 }
@@ -280,20 +286,20 @@
                         updateTimerDisplay(0, totalMs);
                         elapsedMs = 0;
                         state = "start";
-                        if(progress.textContent === "ﾊﾞｰON"){
+                        if (progress.textContent === "ﾊﾞｰON") {
                             HideElementByID("timer-bg", "hidden");
                         }
                         document.getElementById("timer-bg").style.width = "100%";
                         const buttons = document.querySelectorAll(".setBtn.hidden");
-                        buttons.forEach(btn =>{
+                        buttons.forEach(btn => {
                             HideElement(btn, "visible");
                         })
                         const buttons2 = document.querySelectorAll(".actionBtn.hidden");
-                        buttons2.forEach(btn =>{
+                        buttons2.forEach(btn => {
                             HideElement(btn, "visible");
-                        })                       
+                        })
                         const buttons3 = document.querySelectorAll(".adjBtnGroup");
-                        buttons3.forEach(btn =>{
+                        buttons3.forEach(btn => {
                             HideElement(btn, "visible");
                         })
                         return;
@@ -302,31 +308,31 @@
                     updateTimerDisplay(elapsedMs, totalMs);
                 }, 1000);
             }
-        }else if(start.textContent === "ストップ"){
+        } else if (start.textContent === "ストップ") {
             start.textContent = "スタート";
             clearInterval(timerID);
             const buttons = document.querySelectorAll(".actionBtn.hidden");
-            buttons.forEach(btn =>{
+            buttons.forEach(btn => {
                 HideElement(btn, "visible");
-            })    
+            })
         }
     }
 
     //リセットボタンをクリックしたときの処理
-    function ClickReset(){
+    function ClickReset() {
         const buttons = document.querySelectorAll(".setBtn.hidden");
-        buttons.forEach(btn =>{
+        buttons.forEach(btn => {
             HideElement(btn, "visible");
         })
         const buttons2 = document.querySelectorAll(".actionBtn.hidden");
-        buttons2.forEach(btn =>{
-            HideElement(btn, "visible");
-        })                       
-        const buttons3 = document.querySelectorAll(".adjBtnGroup");
-        buttons3.forEach(btn =>{
+        buttons2.forEach(btn => {
             HideElement(btn, "visible");
         })
-        if(!document.getElementById("timer-bg").classList.contains("hidden")){
+        const buttons3 = document.querySelectorAll(".adjBtnGroup");
+        buttons3.forEach(btn => {
+            HideElement(btn, "visible");
+        })
+        if (!document.getElementById("timer-bg").classList.contains("hidden")) {
             HideElementByID("timer-bg", "hidden");
         }
         document.getElementById("timer-bg").style.width = "100%";
@@ -338,24 +344,24 @@
     }
 
     //セットボタンをクリックしたときの処理
-    function ClickSet(timeText){
+    function ClickSet(timeText) {
         state = "countdown";
         start.textContent = "ストップ";
-        if(progress.textContent === "ﾊﾞｰON"){
+        if (progress.textContent === "ﾊﾞｰON") {
             HideElementByID("timer-bg", "visible");
         }
         const buttons = document.querySelectorAll(".setBtn");
-        buttons.forEach(btn =>{
+        buttons.forEach(btn => {
             HideElement(btn, "hidden");
         })
         const buttons2 = document.querySelectorAll(".actionBtn");
-        buttons2.forEach(btn =>{
-            if(btn.id !== "start"){
+        buttons2.forEach(btn => {
+            if (btn.id !== "start") {
                 HideElement(btn, "hidden");
             }
         })
         const buttons3 = document.querySelectorAll(".adjBtnGroup");
-        buttons3.forEach(btn =>{
+        buttons3.forEach(btn => {
             HideElement(btn, "hidden");
         })
 
@@ -379,23 +385,23 @@
                 start.textContent = "スタート";
                 elapsedMs = 0;
                 state = "start";
-                if(progress.textContent === "ﾊﾞｰON"){
+                if (progress.textContent === "ﾊﾞｰON") {
                     HideElementByID("timer-bg", "hidden");
                 }
                 document.getElementById("timer-bg").style.width = "100%";
                 const buttons = document.querySelectorAll(".setBtn.hidden");
-                buttons.forEach(btn =>{
+                buttons.forEach(btn => {
                     HideElement(btn, "visible");
                 })
                 const buttons2 = document.querySelectorAll(".actionBtn.hidden");
-                buttons2.forEach(btn =>{
-                    HideElement(btn, "visible");
-                })                
-                const buttons3 = document.querySelectorAll(".adjBtnGroup");
-                buttons3.forEach(btn =>{
+                buttons2.forEach(btn => {
                     HideElement(btn, "visible");
                 })
-                    return;
+                const buttons3 = document.querySelectorAll(".adjBtnGroup");
+                buttons3.forEach(btn => {
+                    HideElement(btn, "visible");
+                })
+                return;
             }
             timer.textContent = timeToString(roundUpToNearestThousand(elapsedMs));
             updateTimerDisplay(elapsedMs, totalMs);
@@ -406,43 +412,43 @@
     function roundUpToNearestThousand(num) {
         return Math.ceil(num / 1000) * 1000;
     }
-    
+
     //IDによって要素の表示を変更する
-    function HideElementByID(id, isHidden){
-        if(isHidden === "hidden"){
+    function HideElementByID(id, isHidden) {
+        if (isHidden === "hidden") {
             document.getElementById(id).classList.add("hidden");
-        }else if(isHidden === "visible"){
+        } else if (isHidden === "visible") {
             document.getElementById(id).classList.remove("hidden");
         }
     }
 
     //要素の表示切り替え
-    function HideElement(element, isHidden){
-        if(isHidden === "hidden"){
+    function HideElement(element, isHidden) {
+        if (isHidden === "hidden") {
             element.classList.add("hidden");
-        }else if(isHidden === "visible"){
+        } else if (isHidden === "visible") {
             element.classList.remove("hidden");
         }
     }
 
     //AudioButtonの動作
-    function ClickAudio(Btn){
-        if(audioNum < 5){
+    function ClickAudio(Btn) {
+        if (audioNum < 5) {
             audioNum++;
-        }else{
+        } else {
             audioNum = 0;
         }
-        Btn.textContent= "♪" + audioString[audioNum];
+        Btn.textContent = "♪" + audioString[audioNum];
     }
 
     //AdjustButtonの動作
-    function ClickAdjust(id){
+    function ClickAdjust(id) {
         let msec = timeToMilliSec(timer.textContent);
         let plus = Number(id.slice(1));
 
-        if(id.includes("m")){
+        if (id.includes("m")) {
             plus *= 1000 * 60;
-        }else if(id.includes("s")){
+        } else if (id.includes("s")) {
             plus *= 1000;
         }
 
@@ -461,39 +467,39 @@
         let widthPercent = (remainingMs / totalMs) * 100;
         document.getElementById("timer-bg").style.width = widthPercent + "%";
     }
-    
+
     //プログレスボタンの処理
-    function ClickProgress(Btn){
-        if(Btn.textContent === "ﾊﾞｰON"){
+    function ClickProgress(Btn) {
+        if (Btn.textContent === "ﾊﾞｰON") {
             Btn.textContent = "ﾊﾞｰOFF";
-        }else if(Btn.textContent === "ﾊﾞｰOFF"){
+        } else if (Btn.textContent === "ﾊﾞｰOFF") {
             Btn.textContent = "ﾊﾞｰON";
         }
     }
 
     //change-setボタンの処理
-    function ClickChangeSet(Btn){
+    function ClickChangeSet(Btn) {
         const targetSet = document.getElementById(Btn.classList[0]);
         const BtnColor = getComputedStyle(Btn).backgroundColor;
         let tmpTime = timeToMilliSec(targetSet.textContent);
-        if(Btn.textContent === "△"){
+        if (Btn.textContent === "△") {
             //1.lightgrayなら 2.grayなら
-            if(BtnColor === "rgb(211, 211, 211)"){
+            if (BtnColor === "rgb(211, 211, 211)") {
                 tmpTime += 1000;
-            }else if(BtnColor === "rgb(128, 128, 128)"){
+            } else if (BtnColor === "rgb(128, 128, 128)") {
                 tmpTime += (60 * 1000);
             }
-        }else if(Btn.textContent === "▽"){
+        } else if (Btn.textContent === "▽") {
             //1.lightgrayなら 2.grayなら
-            if(BtnColor === "rgb(211, 211, 211)"){
+            if (BtnColor === "rgb(211, 211, 211)") {
                 tmpTime -= 1000;
-            }else if(BtnColor === "rgb(128, 128, 128)"){
+            } else if (BtnColor === "rgb(128, 128, 128)") {
                 tmpTime -= (60 * 1000);
             }
         }
-        if(tmpTime < 1000){
+        if (tmpTime < 1000) {
             tmpTime = 1000;
-        }else if(tmpTime > 5999000){
+        } else if (tmpTime > 5999000) {
             tmpTime = 5999000;
         }
         targetSet.textContent = timeToString(tmpTime);
@@ -502,41 +508,41 @@
     //settingボタンの処理
     function ClickSetting() {
         if (setting.textContent === "設定") {
-        //「設定」→「設定完了」に変更し、20個のボタンを表示（それ以外は非表示）
-        document.querySelectorAll('.b1, .b2, .b3, .b4, .b5').forEach(btn => {
-            btn.classList.remove('hidden');
-        });
-        document.querySelectorAll('.actionBtn, .adjBtnGroup').forEach(btn => {
-            if(btn.textContent !== "設定"){
-                btn.classList.add('hidden');
-            }
-        });
-        document.querySelectorAll('.setBtn').forEach(btn => {
-            btn.disabled = true;
-        });
-        timer.classList.add('hidden');
-        setting.textContent = "保存";
-        setting.style.backgroundColor = "red"
-        } else if (setting.textContent === "保存") {
-        //「設定完了」→「設定」に変更し、20個のボタンを非表示（それ以外を表示）
-        document.querySelectorAll('.b1, .b2, .b3, .b4, .b5').forEach(btn => {
-            btn.classList.add('hidden');
-        });
-        document.querySelectorAll('.actionBtn, .adjBtnGroup').forEach(btn => {
-            if(btn.textContent !== "保存"){
+            //「設定」→「設定完了」に変更し、20個のボタンを表示（それ以外は非表示）
+            document.querySelectorAll('.b1, .b2, .b3, .b4, .b5').forEach(btn => {
                 btn.classList.remove('hidden');
-            }
-        });
-        document.querySelectorAll('.setBtn').forEach(btn => {
-            btn.disabled = false;
-        });
-        timer.classList.remove('hidden');
-        setting.textContent = "設定";
-        setting.style.backgroundColor = "gray"
-        // ＋ 現在の状態を記録
-        const setButtons = document.querySelectorAll('.setBtn');
-        const texts = Array.from(setButtons).map(btn => btn.textContent);
-        localStorage.setItem("setBtnTexts", JSON.stringify(texts));
+            });
+            document.querySelectorAll('.actionBtn, .adjBtnGroup').forEach(btn => {
+                if (btn.textContent !== "設定") {
+                    btn.classList.add('hidden');
+                }
+            });
+            document.querySelectorAll('.setBtn').forEach(btn => {
+                btn.disabled = true;
+            });
+            timer.classList.add('hidden');
+            setting.textContent = "保存";
+            setting.style.backgroundColor = "red"
+        } else if (setting.textContent === "保存") {
+            //「設定完了」→「設定」に変更し、20個のボタンを非表示（それ以外を表示）
+            document.querySelectorAll('.b1, .b2, .b3, .b4, .b5').forEach(btn => {
+                btn.classList.add('hidden');
+            });
+            document.querySelectorAll('.actionBtn, .adjBtnGroup').forEach(btn => {
+                if (btn.textContent !== "保存") {
+                    btn.classList.remove('hidden');
+                }
+            });
+            document.querySelectorAll('.setBtn').forEach(btn => {
+                btn.disabled = false;
+            });
+            timer.classList.remove('hidden');
+            setting.textContent = "設定";
+            setting.style.backgroundColor = "gray"
+            // ＋ 現在の状態を記録
+            const setButtons = document.querySelectorAll('.setBtn');
+            const texts = Array.from(setButtons).map(btn => btn.textContent);
+            localStorage.setItem("setBtnTexts", JSON.stringify(texts));
         }
     }
 }
