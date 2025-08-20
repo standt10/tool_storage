@@ -2,19 +2,8 @@
 <urlset xmlns="http://www.sitemaps.org/schemas/sitemap/0.9">
 
   <url>
-    <loc>https://standt10.github.io/</loc>
-  </url>
-
-  <url>
     <loc>https://standt10.github.io/tool_storage/</loc>
   </url>
 
-  <url>
-    <loc>https://standt10.github.io/tool_storage/SimpleTimer/index.html</loc>
-  </url>
-
-  <url>
-    <loc>https://standt10.github.io/tool_storage/CalcCard/index.html</loc>
-  </url>
-
 </urlset>
+
