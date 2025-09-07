@@ -1120,6 +1120,7 @@
                             forcusNow.value = 999;
                         }
                     }
+                    checkInputs();
                 }
             }
         }
@@ -1167,4 +1168,5 @@
             updateConfig(1, "する", true);
         }
     }
+
 }
