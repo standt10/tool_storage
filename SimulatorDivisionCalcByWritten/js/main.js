@@ -110,7 +110,7 @@
     // title
     const title = document.createElement("div");
     title.id = "title";
-    title.textContent = "わり算の筆算 シミュレータ　（４けたまで）÷（３けたまで）";
+    title.textContent = "わり算の筆算くん　（４けたまで）÷（３けたまで）";
     left.appendChild(title);
 
     //左上
@@ -1170,3 +1170,4 @@
     }
 
 }
+
