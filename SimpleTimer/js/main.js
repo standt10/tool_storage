@@ -289,6 +289,7 @@
                         updateTimerDisplay(0, totalMs);
                         elapsedMs = 0;
                         state = "start";
+                        start.textContent = "スタート";
                         if (progress.textContent === "ﾊﾞｰON") {
                             HideElementByID("timer-bg", "hidden");
                         }
