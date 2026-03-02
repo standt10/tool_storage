@@ -175,7 +175,9 @@
     //DOM構築完了後のイベント
     document.addEventListener("DOMContentLoaded", () => {
         for (let i = 1; i <= 6; i++) {
-            audioFiles.push(`audio/sound${i}.mp3`);
+            const audio = new Audio(`audio/sound${i}.mp3`);
+            audio.preload = "auto"; // 明示的に事前読み込みを指定
+            audioFiles.push(audio); // Audioオブジェクトを保存        
         }
         const start = document.getElementById("start");
         const reset = document.getElementById("reset");
@@ -280,8 +282,9 @@
                     elapsedMs = endMs - Date.now();
                     if (elapsedMs <= 0) {
                         clearInterval(timerID);
-                        let alarm = new Audio(audioFiles[audioNum]);
-                        alarm.play();
+                        const alarm = audioFiles[audioNum]; // 準備済みのものを取得
+                        alarm.currentTime = 0; // 再生位置を先頭に戻す（連続再生対応）
+                        alarm.play(); alarm.play();
                         timer.textContent = "00:00";
                         updateTimerDisplay(0, totalMs);
                         elapsedMs = 0;
@@ -378,8 +381,9 @@
 
             if (elapsedMs <= 0) {
                 clearInterval(timerID);
-                let alarm = new Audio(audioFiles[audioNum]);
-                alarm.play();
+                const alarm = audioFiles[audioNum]; // 準備済みのものを取得
+                alarm.currentTime = 0; // 再生位置を先頭に戻す（連続再生対応）
+                alarm.play(); alarm.play();
                 timer.textContent = "00:00";
                 updateTimerDisplay(0, totalMs);
                 start.textContent = "スタート";
