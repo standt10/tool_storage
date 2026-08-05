@@ -1,9 +1,9 @@
 'use strict'
 {
     const buttons = document.getElementById("buttons");
-    const url = ["SimpleTimer/index.html", "CalcCard/index.html", "SimulatorDivisionCalcByWritten/index.html"];
-    const aText = ["タイマー", "けいさんカード", "わり算の筆算"];
-    const aClass = ["aWhite", "aBlack", "aWhite"];
+    const url = ["SimpleTimer/index.html", "CalcCard/index.html", "Multiplication-App/index.html", "SimulatorDivisionCalcByWritten/index.html"];
+    const aText = ["タイマー", "けいさんカード", "かけ算カード", "わり算の筆算"];
+    const aClass = ["aWhite", "aBlack", "aWhite", "aBlack"];
     for (let i = 0; i < url.length; i++) {
         const a = document.createElement("a");
         a.id = "a" + i.toString();
