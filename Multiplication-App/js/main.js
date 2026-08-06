@@ -996,6 +996,13 @@
             if (record >= border[2]) return 3;
             if (record >= border[1]) return 2;
             if (record >= border[0]) return 1;
+        } else if (buttonId === "btn_select") {
+            // タイムモード(×length)
+            const btn_select = document.getElementById("btn_select");
+            if (record <= border[3] * btn_select.dataset.dan.length) return 4;
+            if (record <= border[2] * btn_select.dataset.dan.length) return 3;
+            if (record <= border[1] * btn_select.dataset.dan.length) return 2;
+            if (record <= border[0] * btn_select.dataset.dan.length) return 1;
         } else {
             // タイムモード
             if (record <= border[3]) return 4;
