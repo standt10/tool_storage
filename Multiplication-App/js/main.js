@@ -821,9 +821,10 @@
         } else if (btntext === "おわる") {
             switchPage(true);
         } else if (btntext === "また") {
-            nowModeButton.click();
+            clickMenuButton({
+                target: nowModeButton
+            });
             document.activeElement.blur();
-            sounds.start.play();
         } else {
             if (answer.textContent.length <= 1) {
                 answer.textContent = answer.textContent + btntext;
