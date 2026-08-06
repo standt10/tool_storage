@@ -11,6 +11,7 @@
     const remain_number = document.getElementById("remain_number");
     const time_display = document.getElementById("time_display");
     const correct_display = document.getElementById("correct_display");
+    const label_basic = document.getElementById("label_basic");
     //問題変数
     const allQuestions = [];                                //九九の問題
     let useQuestions = [];                                  //使用する問題
@@ -91,7 +92,7 @@
     switchPage(true);
     prepareAllQuestions();
     setKeyBoardEvent();
-
+    console.log(records);
     //トップページの準備
     function setTopPage() {
         //基本問題
@@ -219,7 +220,7 @@
                 checkbox.type = "checkbox";
                 checkbox.id = "check" + order[i].toString();
                 checkbox.dataset.dan = order[i];
-                checkbox.addEventListener("pointerdown", clickCheckBox);
+                checkbox.addEventListener("change", clickCheckBox);
                 const label = document.createElement("label");
                 label.textContent = order[i].toString() + "のだん";
                 label.classList = "labelchecks";
@@ -260,7 +261,7 @@
             }
         } else {
             btn_select.textContent = "99:59";
-            setButtonColor(btn_select, records[btn_select.id]);
+            setButtonColor(btn_select, undefined);
         }
         //シャッフル
         const shuffle_title = document.getElementById("shuffle_title");
@@ -400,6 +401,11 @@
             mystery_buttons.appendChild(label_mystery);
             mystery_buttons.appendChild(btn_mystery);
         }
+        setDanMedal();
+        setSelectMedal();
+        setShuffleMedal();
+        setTimeMedal();
+        setMysteryMedal();
     }
 
     //クイズページの準備
@@ -689,7 +695,7 @@
     }
 
     //checkboxの状態を取得
-    function judgeCheckBox() {
+    function judgeCheckBox(save = true) {
         let dan = "";
         const checks = document.querySelectorAll('[id*="check"]');
         checks.forEach(check => {
@@ -699,7 +705,8 @@
         });
         dan = dan.split("").sort().join("");
         document.getElementById("btn_select").dataset.dan = dan;
-        saveSettings(dan);
+        setSelectMedal();
+        if (save) { saveSettings(); }
     }
 
     //チェックボックスの自動セット
@@ -707,7 +714,7 @@
         for (let i = 1; i <= 9; i++) {
             document.getElementById(`check${i}`).checked = str.includes(String(i));
         }
-        judgeCheckBox();
+        judgeCheckBox(false);
     }
 
     //えらんでボタンの記録表示
@@ -724,7 +731,7 @@
             }
         } else {
             btn_select.textContent = "99:59";
-            setButtonColor(btn_select, records[btn_select.id]);
+            setButtonColor(btn_select, undefined);
         }
     }
 
@@ -1041,9 +1048,11 @@
                 // 初回登録
                 records[key] = {};
                 isNewRecord = true;
+            } else if (!(dan in records[key])) {
+                isNewRecord = true;
             } else {
                 // タイム競争（少ない方が新記録）
-                isNewRecord = record < records[key];
+                isNewRecord = record < records[key][dan];
             }
             if (isNewRecord) {
                 records[key][dan] = record;
@@ -1051,6 +1060,7 @@
                 nowModeButton.textContent = formatTime(record);
                 console.log(nowModeButton.id);
                 setButtonColor(nowModeButton, records[key][dan]);
+                setSelectMedal();
                 return true;
             }
         } else {    //「えらんで」以外
@@ -1073,6 +1083,15 @@
                     nowModeButton.textContent = formatTime(record);
                 }
                 setButtonColor(nowModeButton, records[key]);
+                if (key.startsWith("btn_shuffle")) {
+                    setShuffleMedal();
+                } else if (key.startsWith("btn_time")) {
+                    setTimeMedal();
+                } else if (key.startsWith("btn_mystery")) {
+                    setMysteryMedal();
+                } else {
+                    setDanMedal();
+                }
                 return true;
             }
         }
@@ -1192,6 +1211,55 @@
                 };
             }
         }
+    }
+
+    // 各だんのメダル表示
+    function setDanMedal() {
+        // 0番目はタイトルなので1～9だけ
+        for (let dan = 1; dan <= 9; dan++) {
+            const medal = getGroupMedal(["order" + dan, "reverse" + dan, "random" + dan]);
+            label_basic.children[dan].textContent = medal + toFullWidth(String(dan)) + "のだん";
+        }
+    }
+
+    //えらんでのメダル表示
+    function setSelectMedal() {
+        const btn_select = document.getElementById("btn_select");
+        const title = document.getElementById("select_title").children[0];
+        const rank = getRank("btn_select", records.btn_select?.[btn_select.dataset.dan]);
+        const medal = ["", "", "🥉", "🥈", "🥇"];
+        title.textContent = medal[rank] + "えらんで";
+    }
+
+    //シャッフルのメダル表示
+    function setShuffleMedal() {
+        const title = document.getElementById("shuffle_title").children[0];
+        const medal = getGroupMedal(["btn_shuffle1", "btn_shuffle2", "btn_shuffle3", "btn_shuffle4"]);
+        title.textContent = medal + "シャッフル";
+    }
+
+    //タイムのメダル表示
+    function setTimeMedal() {
+        const title = document.getElementById("time_title").children[0];
+        const medal = getGroupMedal(["btn_time1", "btn_time2", "btn_time3", "btn_time4"]);
+        title.textContent = medal + "タイム";
+    }
+
+    //ミステリーのメダル表示
+    function setMysteryMedal() {
+        const title = document.getElementById("mystery_title").children[0];
+        const medal = getGroupMedal(["btn_mystery1", "btn_mystery2", "btn_mystery3", "btn_mystery4"]);
+        title.textContent = medal + "ミステリー";
+    }
+
+    // 指定したボタン群からメダルを返す
+    function getGroupMedal(buttonIds) {
+        const ranks = buttonIds.map(id => getRank(id, records[id]));
+        const minRank = Math.min(...ranks);
+        if (minRank >= 4) return "🥇";
+        if (minRank >= 3) return "🥈";
+        if (minRank >= 2) return "🥉";
+        return "";
     }
 
     //文字サイズの自動調整
