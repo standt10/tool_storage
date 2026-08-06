@@ -23,6 +23,8 @@ button {
     border-radius: 2vmin;
     cursor: pointer;
     user-select: none;
+    -webkit-tap-highlight-color: transparent;
+    touch-action: manipulation;
 }
 
 button:hover {
@@ -293,6 +295,9 @@ button:hover {
     grid-column: 4/7;
     grid-row: 8/10;
     display: grid;
+    text-align: center;
+    white-space: normal;
+    overflow-wrap: break-word;
 }
 
 #keypad {
