@@ -4,6 +4,13 @@
     //ページ変数
     const topPage = document.getElementById("top-page");    //トップページ
     const quizPage = document.getElementById("quiz-page");  //問題ページ
+    //オブジェクト変数
+    const quiz = document.getElementById("quiz");
+    const equal = document.getElementById("equal");
+    const answer = document.getElementById("answer");
+    const remain_number = document.getElementById("remain_number");
+    const time_display = document.getElementById("time_display");
+    const correct_display = document.getElementById("correct_display");
     //問題変数
     const allQuestions = [];                                //九九の問題
     let useQuestions = [];                                  //使用する問題
@@ -150,7 +157,7 @@
                 btn2.dataset.mode = "normal";
                 btn2.dataset.num = 9;
                 btn2.dataset.time = 0;
-                btn2.addEventListener("click", clickMenuButton);
+                btn2.addEventListener("pointerdown", clickMenuButton);
                 normal_order.appendChild(btn2);
                 //ぎゃくから
                 const btn3 = document.createElement("button");
@@ -169,7 +176,7 @@
                 btn3.dataset.mode = "reverse";
                 btn3.dataset.num = 9;
                 btn3.dataset.time = 0;
-                btn3.addEventListener("click", clickMenuButton);
+                btn3.addEventListener("pointerdown", clickMenuButton);
                 reverse_order.appendChild(btn3);
                 //ばらばら
                 const btn4 = document.createElement("button");
@@ -188,7 +195,7 @@
                 btn4.dataset.mode = "random";
                 btn4.dataset.num = 9;
                 btn4.dataset.time = 0;
-                btn4.addEventListener("click", clickMenuButton);
+                btn4.addEventListener("pointerdown", clickMenuButton);
                 random_order.appendChild(btn4);
             }
 
@@ -212,7 +219,7 @@
                 checkbox.type = "checkbox";
                 checkbox.id = "check" + order[i].toString();
                 checkbox.dataset.dan = order[i];
-                checkbox.addEventListener("click", clickCheckBox);
+                checkbox.addEventListener("pointerdown", clickCheckBox);
                 const label = document.createElement("label");
                 label.textContent = order[i].toString() + "のだん";
                 label.classList = "labelchecks";
@@ -232,7 +239,7 @@
                 btn_select.dataset.mode = "random";
                 btn_select.dataset.num = 0;
                 btn_select.dataset.time = 0;
-                btn_select.addEventListener("click", clickMenuButton);
+                btn_select.addEventListener("pointerdown", clickMenuButton);
                 select_checks.appendChild(btn_select);
             }
         }
@@ -292,7 +299,7 @@
             btn_shuffle.dataset.mode = "random";
             btn_shuffle.dataset.num = strings_shuffle[i];
             btn_shuffle.dataset.time = 0;
-            btn_shuffle.addEventListener("click", clickMenuButton);
+            btn_shuffle.addEventListener("pointerdown", clickMenuButton);
             shuffle_buttons.appendChild(label_shuffle);
             shuffle_buttons.appendChild(btn_shuffle);
         }
@@ -333,7 +340,7 @@
             btn_time.dataset.mode = "random";
             btn_time.dataset.num = 162;
             btn_time.dataset.time = strings_time[i];
-            btn_time.addEventListener("click", clickMenuButton);
+            btn_time.addEventListener("pointerdown", clickMenuButton);
             time_buttons.appendChild(label_time);
             time_buttons.appendChild(btn_time);
         }
@@ -389,7 +396,7 @@
                 }
             }
             setButtonColor(btn_mystery, records[btn_mystery.id]);
-            btn_mystery.addEventListener("click", clickMenuButton);
+            btn_mystery.addEventListener("pointerdown", clickMenuButton);
             mystery_buttons.appendChild(label_mystery);
             mystery_buttons.appendChild(btn_mystery);
         }
@@ -398,21 +405,18 @@
     //クイズページの準備
     function setQuizPage() {
         //式
-        const formula = document.getElementById("quiz");
-        formula.textContent = "２ × ８"
-        formula.style.display = "flex";
-        formula.style.justifyContent = "center";
-        formula.style.alignItems = "center";
-        formula.style.fontSize = "clamp(20px,30vmin,154px)";
+        quiz.textContent = ""
+        quiz.style.display = "flex";
+        quiz.style.justifyContent = "center";
+        quiz.style.alignItems = "center";
+        quiz.style.fontSize = "clamp(20px,30vmin,154px)";
         //イコール
-        const equal = document.getElementById("equal");
         equal.textContent = "=";
         equal.style.display = "flex";
         equal.style.justifyContent = "center";
         equal.style.alignItems = "center";
         equal.style.fontSize = "clamp(20px,30vmin,154px)";
         //回答蘭
-        const answer = document.getElementById("answer");
         answer.textContent = "";
         answer.style.display = "flex";
         answer.style.justifyContent = "center";
@@ -426,7 +430,6 @@
         remain_label.style.alignItems = "flex-end";
         remain_label.style.fontSize = "clamp(20px,5vmin,64px)";
         //残り表示
-        const remain_number = document.getElementById("remain_number");
         remain_number.textContent = "";
         remain_number.style.display = "flex";
         remain_number.style.justifyContent = "center";
@@ -467,7 +470,6 @@
         correct_label.style.alignItems = "flex-end";
         correct_label.style.fontSize = "clamp(20px,5vmin,64px)";
         //正答表示
-        const correct_display = document.getElementById("correct_display");
         correct_display.textContent = "";
         correct_display.style.display = "flex";
         correct_display.style.justifyContent = "center";
@@ -492,7 +494,7 @@
             } else {
                 button.classList.add("keynumber");
             }
-            button.addEventListener("click", clickTenKey);
+            button.addEventListener("pointerdown", clickTenKey);
             keypad.appendChild(button);
         });
     }
@@ -531,16 +533,25 @@
         nowQnum = 0;
         //問題表示
         ShowQuestion();
+        //ミステリー判定
+        if (event.target.id.startsWith("btn_mystery")) {
+            equal.textContent = "▢=";
+            fitText(equal);
+        } else {
+            equal.textContent = "=";
+            equal.style.fontSize = "clamp(20px,30vmin,154px)";
+        }
         //回答欄クリア
-        document.getElementById("answer").textContent = "";
+        answer.textContent = "";
         //正しい答え表示なし
-        document.getElementById("correct_display").textContent = "";
+        correct_display.textContent = "";
+        correct_display.style.fontSize = "clamp(20px,12vmin,80px)";
         //問題数表示
         if (event.target.dataset.num === "162") {
-            document.getElementById("remain_number").textContent = formatNumber("0");
+            remain_number.textContent = formatNumber("0");
             document.getElementById("remain_label").textContent = "いま";
         } else {
-            document.getElementById("remain_number").textContent = formatNumber(event.target.dataset.num);
+            remain_number.textContent = formatNumber(event.target.dataset.num);
             document.getElementById("remain_label").textContent = "のこり";
         }
         //時間表示
@@ -561,40 +572,51 @@
     //問題表示用関数
     function ShowQuestion() {
         const q = useQuestions[nowQnum];
+        const sp = "\u00A0";    //半角程度の空白
         if (q.hidden === "dan") {
-            document.getElementById("quiz").textContent =
-                "□×" + formatNumber(q.kake) + "=" + formatNumber(q.answer);
+            quiz.textContent =
+                "▢" + sp + "×" + formatNumber(q.kake) + "=" + isSpace(q.answer) + formatNumber(q.answer);
         } else if (q.hidden === "kake") {
-            document.getElementById("quiz").textContent =
-                formatNumber(q.dan) + "×□=" + formatNumber(q.answer);
+            quiz.textContent =
+                formatNumber(q.dan) + "×" + sp + "▢" + sp + "=" + isSpace(q.answer) + formatNumber(q.answer);
         } else {
-            document.getElementById("quiz").textContent =
+            quiz.textContent =
                 formatNumber(q.dan) + "×" + formatNumber(q.kake);
+        }
+    }
+
+    //見た目調整（1桁ならスペースなし、2桁ならスペースあり）
+    function isSpace(num) {
+        if (num.length === 1) {
+            return "";
+        } else {
+            const sp = "\u00A0";    //半角程度の空白
+            return sp;
         }
     }
 
     //タイマーカウントアップ関数
     function startCountUp() {
         startTime = Date.now();
-        timerId = setInterval(updateCountUp, 100);
+        timerId = setInterval(updateCountUp, 1000);
     }
 
     //カウントアップアップデート
     function updateCountUp() {
         elapsed = Math.floor((Date.now() - startTime) / 1000);
-        document.getElementById("time_display").textContent = formatTime(elapsed);
+        time_display.textContent = formatTime(elapsed);
     }
 
     //タイマーカウントダウン関数
     function startCountDown(limit) {
         endTime = Date.now() + limit * 1000;
-        timerId = setInterval(updateCountDown, 100);
+        timerId = setInterval(updateCountDown, 1000);
     }
 
     //カウントダウンアップデート
     function updateCountDown() {
         const remain_time = Math.max(0, Math.ceil((endTime - Date.now()) / 1000));
-        document.getElementById("time_display").textContent = formatTime(remain_time);
+        time_display.textContent = formatTime(remain_time);
         if (remain_time === 0) {
             //終了処理
             finishChallenge(true);
@@ -763,19 +785,15 @@
 
     //テンキー入力処理
     function inputTenkey(btntext) {
-        const answer = document.getElementById("answer");
         if (btntext === "けす") {
             answer.textContent = "";
         } else if (btntext === "OK") {
             if (answer.textContent === "") return;
             if (CheckAnswer()) {
-                //ok音を鳴らす
-                playSoundsOK();
                 //答えを空に
                 answer.textContent = "";
                 //問題数表示
                 const labelTxt = document.getElementById("remain_label").textContent;
-                const remain_number = document.getElementById("remain_number");
                 if (labelTxt === "いま") {
                     remain_number.textContent = formatNumber(Number(toHalfWidth(remain_number.textContent)) + 1);
 
@@ -786,11 +804,15 @@
                 nowQnum++;
                 //終了判定/////////////////////////////////
                 if (nowQnum === useQuestions.length) {
+                    //ok音を鳴らす
+                    playSoundsOK();
                     //終了処理
                     finishChallenge(true);
                 } else {
                     //次の問題を表示
                     ShowNextQuestion();
+                    //ok音を鳴らす
+                    playSoundsOK();
                 }
             } else {
                 //終了処理
@@ -879,26 +901,27 @@
         CanInputByKeyboard = false;
         //成功・失敗で分岐
         if (isSuccess) {
-            const number_display = document.getElementById("remain_number");
-            const time_display = document.getElementById("time_display");
             const RECORD_SCORE = "162";
             let record;
             if (nowModeButton.dataset.num === RECORD_SCORE) {
-                record = Number(toHalfWidth(number_display.textContent));
+                record = Number(toHalfWidth(remain_number.textContent));
             } else {
                 record = parseTime(time_display.textContent);
             }
-            saveBestRecord(nowModeButton.dataset.dan, nowModeButton.dataset.num, record);
+            const isNewRecord = saveBestRecord(nowModeButton.dataset.dan, nowModeButton.dataset.num, record);
+            correct_display.textContent = getResultMessage(isNewRecord, nowModeButton.id, record);
+            fitText(correct_display);
         } else {
+            //正答を示す
+            correct_display.textContent = formatNumber(useQuestions[nowQnum].dan) + "×" + formatNumber(useQuestions[nowQnum].kake) + "=" + formatNumber(useQuestions[nowQnum].answer);
+            fitText(correct_display);
             //ng音を鳴らす(再生終了を待つ)
             await playSound(sounds.ng);
-            //正答を示す
-            document.getElementById("correct_display").textContent = formatNumber(useQuestions[nowQnum].dan) + "×" + formatNumber(useQuestions[nowQnum].kake) + "=" + formatNumber(useQuestions[nowQnum].answer);
         }
-        //タイマーを止める
-        stopTimer();
         //finish音を鳴らす
         playSoundsFinish();
+        //タイマーを止める
+        stopTimer();
     }
 
     //半角英数字を全角に変換
@@ -1035,6 +1058,135 @@
             }
         }
         return false;
+    }
+
+    //終了メッセージ作成
+    function getResultMessage(isNewRecord, key, record) {
+        const messagesNewRecord = ["しんきろく🎉", "しんきろく🎊", "しんきろく👏", "しんきろく🥇", "しんきろく🌈"];
+        if (isNewRecord) {
+            return randomMessage(messagesNewRecord);
+        }
+        const info = getRankInfo(key, record);
+        const messagesGold = ["きんメダル🏅", "さいこう！🏆", "マスター！👑", "かんぺき！✨", "めいじん！🥰"];
+        if (!info) return "";
+        // すでに金
+        if (info.rank === 4) {
+            return randomMessage(messagesGold);
+        }
+        const isScore =
+            key.startsWith("btn_time") ||
+            key === "btn_mystery3" ||
+            key === "btn_mystery4";
+        let diff;
+        if (isScore) {
+            // 問題数は多い方が良い
+            diff = info.next - record;
+        } else {
+            // タイムは少ない方が良い
+            diff = record - info.next;
+        }
+        // 次のランク名
+        const rankNames = [
+            "きみどり",
+            "どう",
+            "ぎん",
+            "きん"
+        ];
+        const nextRank = rankNames[info.rank];
+        if (diff === 1) {
+            return `おしい！あと１${isScore ? "もん" : "びょう"}で${nextRank}！`;
+        }
+        if (diff <= 3) {
+            return `あと${diff}${isScore ? "もん" : "びょう"}で${nextRank}！`;
+        }
+        return `つぎは${nextRank}をめざそう！`;
+    }
+
+    //ランダムメッセージ
+    function randomMessage(array) {
+        return array[Math.floor(Math.random() * array.length)];
+    }
+
+    //ランク取得関数
+    function getRankInfo(key, record) {
+        const border = rankBorder[key];
+
+        if (!border) return null;
+
+        const isScore = key.startsWith("btn_time") || key === "btn_mystery4";
+
+        if (isScore) {
+            // 多いほど良い
+            if (record >= border[3]) {
+                return {
+                    rank: 4,
+                    next: null
+                };
+            } else if (record >= border[2]) {
+                return {
+                    rank: 3,
+                    next: border[3]
+                };
+            } else if (record >= border[1]) {
+                return {
+                    rank: 2,
+                    next: border[2]
+                };
+            } else if (record >= border[0]) {
+                return {
+                    rank: 1,
+                    next: border[1]
+                };
+            } else {
+                return {
+                    rank: 0,
+                    next: border[0]
+                };
+            }
+
+        } else {
+            // 少ないほど良い
+            if (record <= border[3]) {
+                return {
+                    rank: 4,
+                    next: null
+                };
+            } else if (record <= border[2]) {
+                return {
+                    rank: 3,
+                    next: border[3]
+                };
+            } else if (record <= border[1]) {
+                return {
+                    rank: 2,
+                    next: border[2]
+                };
+            } else if (record <= border[0]) {
+                return {
+                    rank: 1,
+                    next: border[1]
+                };
+            } else {
+                return {
+                    rank: 0,
+                    next: border[0]
+                };
+            }
+        }
+    }
+
+    //文字サイズの自動調整
+    function fitText(div) {
+        let size = 80;
+        div.style.fontSize = size + "px";
+        while (
+            (div.scrollWidth > div.clientWidth ||
+                div.scrollHeight > div.clientHeight) &&
+            size > 16
+        ) {
+            size--;
+            div.style.fontSize = size + "px";
+        }
     }
 
     //ok音を鳴らす（待たない）
