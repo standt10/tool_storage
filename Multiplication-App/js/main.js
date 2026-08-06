@@ -207,7 +207,7 @@
         //タイトル部分
         const title1 = document.createElement("div");
         title1.textContent = "えらんで";
-        title1.style.fontSize = "clamp(8px,3.5vmin,54px)";
+        title1.style.fontSize = "clamp(8px,4vmin,54px)";
         title1.style.display = "flex";
         title1.style.justifyContent = "center";
         title1.style.alignItems = "center";
@@ -249,27 +249,14 @@
             setChecks(records["settings"]);
         }
         //えらんでボタンの記録表示
-        const btn_select = document.getElementById("btn_select");
-        const key = btn_select.dataset.dan;
-        if ("btn_select" in records) {
-            if (key in records["btn_select"]) {
-                btn_select.textContent = formatTime(records["btn_select"][key]);
-                setButtonColor(btn_select, records[btn_select.id][key]);
-            } else {
-                btn_select.textContent = "99:59";
-                setButtonColor(btn_select, records[btn_select.id]);
-            }
-        } else {
-            btn_select.textContent = "99:59";
-            setButtonColor(btn_select, undefined);
-        }
+        setBtn_SelectRecords();
         //シャッフル
         const shuffle_title = document.getElementById("shuffle_title");
         const shuffle_buttons = document.getElementById("shuffle_buttons");
         //タイトル
         const title2 = document.createElement("div");
         title2.textContent = "シャッフル";
-        title2.style.fontSize = "clamp(8px,3.5vmin,54px)";
+        title2.style.fontSize = "clamp(8px,4vmin,54px)";
         title2.style.display = "flex";
         title2.style.justifyContent = "center";
         title2.style.alignItems = "center";
@@ -310,7 +297,7 @@
         //タイトル
         const title3 = document.createElement("div");
         title3.textContent = "タイム";
-        title3.style.fontSize = "clamp(8px,3.5vmin,54px)";
+        title3.style.fontSize = "clamp(8px,4vmin,54px)";
         title3.style.display = "flex";
         title3.style.justifyContent = "center";
         title3.style.alignItems = "center";
@@ -352,7 +339,7 @@
         //タイトル
         const title4 = document.createElement("div");
         title4.textContent = "ミステリー";
-        title4.style.fontSize = "clamp(8px,3.5vmin,54px)";
+        title4.style.fontSize = "clamp(8px,4vmin,54px)";
         title4.style.display = "flex";
         title4.style.justifyContent = "center";
         title4.style.alignItems = "center";
@@ -587,7 +574,6 @@
         nowModeButton = button;
         //キーボード入力受付開始
         startTenkey();
-        CanInputByKeyboard = true;
     }
 
     //menu buttonクリック時の動作
@@ -704,7 +690,9 @@
             }
         });
         dan = dan.split("").sort().join("");
-        document.getElementById("btn_select").dataset.dan = dan;
+        const btn_select = document.getElementById("btn_select");
+        btn_select.dataset.dan = dan;
+
         setSelectMedal();
         if (save) { saveSettings(); }
     }
@@ -721,6 +709,11 @@
     function setBtn_SelectRecords() {
         const btn_select = document.getElementById("btn_select");
         const key = btn_select.dataset.dan;
+        if (key === "") {
+            btn_select.style.display = "none";
+            return;
+        }
+        btn_select.style.display = "flex";
         if ("btn_select" in records) {
             if (key in records["btn_select"]) {
                 btn_select.textContent = formatTime(records[btn_select.id][key]);
@@ -851,6 +844,7 @@
             startGame(nowModeButton);
             document.activeElement.blur();
         } else {
+            if (!CanInputByKeyboard) { return; }
             if (answer.textContent.length <= 1) {
                 answer.textContent = answer.textContent + btntext;
             }
@@ -873,6 +867,7 @@
 
     //終了時のテンキー動作制限
     function stopTenkey() {
+        CanInputByKeyboard = false;
         const btnNum = document.querySelectorAll(".keynumber");
         btnNum.forEach(button => {
             button.disabled = true;
@@ -884,6 +879,7 @@
 
     //開始時のテンキー動作制限解除
     function startTenkey() {
+        CanInputByKeyboard = true;
         const btnNum = document.querySelectorAll(".keynumber");
         btnNum.forEach(button => {
             button.disabled = false;
@@ -896,21 +892,28 @@
     //キーボード制御
     function setKeyBoardEvent() {
         document.addEventListener("keydown", (event) => {
-            if (!CanInputByKeyboard) return;
             if (event.key >= "0" && event.key <= "9") {
+                if (!CanInputByKeyboard) return;
                 event.preventDefault();
                 inputTenkey(event.key);
                 return;
             }
             if (event.key === "Enter") {
                 event.preventDefault();
-                inputTenkey("OK");
+                if (CanInputByKeyboard) {
+                    inputTenkey("OK");
+                } else {
+                    inputTenkey("また");
+                }
                 return;
             }
             if (event.key === "Backspace" || event.key === "Delete") {
                 event.preventDefault();
-                inputTenkey("けす");
-                return;
+                if (CanInputByKeyboard) {
+                    inputTenkey("けす");
+                } else {
+                    inputTenkey("おわる");
+                }
             }
         });
     }
@@ -924,7 +927,6 @@
     async function finishChallenge(isSuccess) {
         //テンキー制限
         stopTenkey();
-        CanInputByKeyboard = false;
         //成功・失敗で分岐
         if (isSuccess) {
             const RECORD_SCORE = "162";
