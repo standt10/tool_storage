@@ -509,32 +509,43 @@
         }
     }
 
-    //menu buttonクリック時の動作
-    function clickMenuButton(event) {
+    //問題開始
+    function startGame(button) {
+        stopTimer();
         let arrayDan = [];
-        if (event.target.dataset.dan === "") {
+        if (button.dataset.dan === "") {
             return;
-        } else if (event.target.dataset.dan === "0") {
+        } else if (button.dataset.dan === "0") {
             arrayDan = [1, 2, 3, 4, 5, 6, 7, 8, 9];
         } else {
-            let tmpDan = event.target.dataset.dan;
+            let tmpDan = button.dataset.dan;
             arrayDan = tmpDan.split("").map(Number);
-            event.target.dataset.num = tmpDan.length * 9;
+            button.dataset.num = tmpDan.length * 9;
         }
-        if (event.target.id.startsWith("btn_mystery")) {
-            useQuestions = GetMysteryQuestions(Number(event.target.dataset.num));
+        if (button.id.startsWith("btn_mystery")) {
+            useQuestions = GetMysteryQuestions(Number(button.dataset.num));
         } else {
-            useQuestions = GetUseQuestions(arrayDan, event.target.dataset.mode, event.target.dataset.num);
+            useQuestions = GetUseQuestions(
+                arrayDan,
+                button.dataset.mode,
+                button.dataset.num
+            );
         }
-        if (event.target.dataset.num === "162") {
-            useQuestions.push(...GetUseQuestions(arrayDan, event.target.dataset.mode, event.target.dataset.num));
+        if (button.dataset.num === "162") {
+            useQuestions.push(
+                ...GetUseQuestions(
+                    arrayDan,
+                    button.dataset.mode,
+                    button.dataset.num
+                )
+            );
         }
         //問題番号リセット
         nowQnum = 0;
         //問題表示
         ShowQuestion();
         //ミステリー判定
-        if (event.target.id.startsWith("btn_mystery")) {
+        if (button.id.startsWith("btn_mystery")) {
             equal.textContent = "▢=";
             fitText(equal);
         } else {
@@ -543,30 +554,39 @@
         }
         //回答欄クリア
         answer.textContent = "";
-        //正しい答え表示なし
+        //正解表示欄クリア
         correct_display.textContent = "";
         correct_display.style.fontSize = "clamp(20px,12vmin,80px)";
         //問題数表示
-        if (event.target.dataset.num === "162") {
+        if (button.dataset.num === "162") {
             remain_number.textContent = formatNumber("0");
-            document.getElementById("remain_label").textContent = "いま";
+            remain_label.textContent = "いま";
         } else {
-            remain_number.textContent = formatNumber(event.target.dataset.num);
-            document.getElementById("remain_label").textContent = "のこり";
+            remain_number.textContent = formatNumber(button.dataset.num);
+            remain_label.textContent = "のこり";
         }
         //時間表示
-        if (event.target.dataset.time === "0") {
+        if (button.dataset.time === "0") {
             startCountUp();
         } else {
-            startCountDown(Number(event.target.dataset.time));
+            startCountDown(Number(button.dataset.time));
         }
+        //○×表示クリア
         switchResultImage("none");
+        //問題ページ表示
         switchPage(false);
-        sounds.start.play();
-        nowModeButton = event.target;
-        //テンキー制限解除
+        //スタート音を鳴らす
+        playSound(sounds.start);
+        //現在のボタンを変数に格納する
+        nowModeButton = button;
+        //キーボード入力受付開始
         startTenkey();
         CanInputByKeyboard = true;
+    }
+
+    //menu buttonクリック時の動作
+    function clickMenuButton(event) {
+        startGame(event.currentTarget);
     }
 
     //問題表示用関数
@@ -821,9 +841,7 @@
         } else if (btntext === "おわる") {
             switchPage(true);
         } else if (btntext === "また") {
-            clickMenuButton({
-                target: nowModeButton
-            });
+            startGame(nowModeButton);
             document.activeElement.blur();
         } else {
             if (answer.textContent.length <= 1) {
