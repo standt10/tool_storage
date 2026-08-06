@@ -1,1 +1,4 @@
-Sitemap: https://standt10.github.io/sitemap.xml
+User-agent: *
+Allow: /
+
+Sitemap: https://standt10.github.io/tool_storage/sitemap.xml
