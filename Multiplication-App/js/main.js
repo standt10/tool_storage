@@ -20,7 +20,8 @@
     let timerId = null;                                     //タイマーID
     let startTime = 0;                                      //スタートタイム
     let endTime = 0;                                        //エンドタイム
-    let elapsed = 0;                                        //経過秒
+    let elapsed = 0;
+    let resultImageTimer = null;                            //○×表示調整用タイマー                                        //経過秒
     //ボタン変数
     let nowModeButton = null;                               //現在選択中のボタン（モード）
     //キーボード変数
@@ -438,6 +439,7 @@
         //○×表示
         const judge_area = document.getElementById("judge_area");
         judge_area.style.backgroundSize = "contain";
+        judge_area.style.transform = "scale(0.8)";
         judge_area.style.backgroundRepeat = "no-repeat";
         judge_area.style.backgroundPosition = "center";
         judge_area.style.backgroundImage = "";
@@ -457,7 +459,7 @@
         time_display.style.fontSize = "clamp(20px,20vmin,120px)";
         //正答ラベル
         const correct_label = document.getElementById("correct_label");
-        correct_label.textContent = "正しいこたえ";
+        correct_label.textContent = "ただしいこたえ";
         correct_label.style.display = "flex";
         correct_label.style.justifyContent = "left";
         correct_label.style.alignItems = "flex-end";
@@ -548,6 +550,8 @@
         //回答欄クリア
         answer.textContent = "";
         //正解表示欄クリア
+        const correct_label = document.getElementById("correct_label");
+        correct_label.textContent = "ただしいこたえ";
         correct_display.textContent = "";
         correct_display.style.fontSize = "clamp(20px,12vmin,80px)";
         //問題数表示
@@ -639,6 +643,8 @@
     function stopTimer() {
         clearInterval(timerId);
         timerId = null;
+        clearInterval(resultImageTimer);
+        resultImageTimer = null;
     }
 
     //秒→00：00変換
@@ -662,9 +668,18 @@
     //○×表示切替
     function switchResultImage(strState) {
         const resultImage = document.getElementById("judge_area");
+        // 前回の消去タイマーをキャンセル
+        if (resultImageTimer !== null) {
+            clearTimeout(resultImageTimer);
+            resultImageTimer = null;
+        }
         if (strState === "maru") {
             resultImage.style.backgroundImage = "url(img/maru.png)";
             resultImage.style.display = "block";
+            //1.2秒後に消す
+            resultImageTimer = setTimeout(() => {
+                switchResultImage("none");
+            }, 1350);
         } else if (strState === "batsu") {
             resultImage.style.backgroundImage = "url(img/batsu.png)";
             resultImage.style.display = "block";
@@ -810,6 +825,7 @@
         } else if (btntext === "OK") {
             if (answer.textContent === "") return;
             if (CheckAnswer()) {
+                switchResultImage("maru");
                 //答えを空に
                 answer.textContent = "";
                 //問題数表示
@@ -835,6 +851,7 @@
                     playSoundsOK();
                 }
             } else {
+                switchResultImage("batsu");
                 //終了処理
                 finishChallenge(false);
             }
@@ -937,6 +954,8 @@
                 record = parseTime(time_display.textContent);
             }
             const isNewRecord = saveBestRecord(nowModeButton.dataset.dan, nowModeButton.dataset.num, record);
+            const correct_label = document.getElementById("correct_label");
+            correct_label.textContent = "けっか";
             correct_display.textContent = getResultMessage(isNewRecord, nowModeButton.id, record);
             fitText(correct_display);
         } else {
