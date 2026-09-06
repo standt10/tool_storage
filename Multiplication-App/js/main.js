@@ -941,9 +941,11 @@
     }
 
     //終了処理
-    async function finishChallenge(isSuccess) {
+    function finishChallenge(isSuccess) {
         //テンキー制限
         stopTenkey();
+        //タイマーを止める
+        stopTimer();
         //成功・失敗で分岐
         if (isSuccess) {
             const RECORD_SCORE = "162";
@@ -958,17 +960,15 @@
             correct_label.textContent = "けっか";
             correct_display.textContent = getResultMessage(isNewRecord, nowModeButton.id, record);
             fitText(correct_display);
+            //finish音を鳴らす
+            playSoundsFinish();
         } else {
             //正答を示す
             correct_display.textContent = formatNumber(useQuestions[nowQnum].dan) + "×" + formatNumber(useQuestions[nowQnum].kake) + "=" + formatNumber(useQuestions[nowQnum].answer);
             fitText(correct_display);
             //ng音を鳴らす(再生終了を待つ)
-            await playSound(sounds.ng);
+            playSoundsNG();
         }
-        //finish音を鳴らす
-        playSoundsFinish();
-        //タイマーを止める
-        stopTimer();
     }
 
     //半角英数字を全角に変換
@@ -1323,15 +1323,36 @@
     }
 
     //音を鳴らす（再生終了を待つ用）
-    function playSound(audio) {
-        return new Promise((resolve) => {
-            audio.currentTime = 0;
+    async function playSound(audio) {
+        audio.currentTime = 0;
 
-            audio.onended = () => {
+        return new Promise((resolve) => {
+            const onEnded = () => {
+                audio.removeEventListener("ended", onEnded);
                 resolve();
             };
 
-            audio.play();
+            audio.addEventListener("ended", onEnded);
+
+            const promise = audio.play();
+
+            if (promise !== undefined) {
+                promise.catch(() => {
+                    resolve();
+                });
+            }
         });
     }
+
+    // function playSound(audio) {
+    //     return new Promise((resolve) => {
+    //         audio.currentTime = 0;
+
+    //         audio.onended = () => {
+    //             resolve();
+    //         };
+
+    //         audio.play();
+    //     });
+    // }
 }
