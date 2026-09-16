@@ -403,7 +403,7 @@
         quiz.style.display = "flex";
         quiz.style.justifyContent = "center";
         quiz.style.alignItems = "center";
-        quiz.style.fontSize = "clamp(20px,30vmin,154px)";
+        quiz.style.fontSize = "clamp(1px,30vmin,154px)";
         //イコール
         equal.textContent = "=";
         equal.style.display = "flex";
@@ -537,6 +537,8 @@
         }
         //問題番号リセット
         nowQnum = 0;
+        //問題ページ表示
+        switchPage(false);
         //問題表示
         ShowQuestion();
         //ミステリー判定
@@ -570,8 +572,6 @@
         }
         //○×表示クリア
         switchResultImage("none");
-        //問題ページ表示
-        switchPage(false);
         //スタート音を鳴らす
         playSound(sounds.start);
         //現在のボタンを変数に格納する
@@ -599,6 +599,7 @@
             quiz.textContent =
                 formatNumber(q.dan) + "×" + formatNumber(q.kake);
         }
+        fitText(quiz);
     }
 
     //見た目調整（1桁ならスペースなし、2桁ならスペースあり）
@@ -1292,7 +1293,7 @@
 
     //文字サイズの自動調整
     function fitText(div) {
-        let size = 80;
+        let size = parseFloat(getComputedStyle(div).fontSize);
         div.style.fontSize = size + "px";
         while (
             (div.scrollWidth > div.clientWidth ||
