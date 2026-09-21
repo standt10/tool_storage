@@ -93,6 +93,23 @@
     switchPage(true);
     prepareAllQuestions();
     setKeyBoardEvent();
+
+    // ★追加：初期表示が完了してからトップ画面の文字サイズを調整
+    requestAnimationFrame(() => {
+        fitTopPageText();
+    });
+
+    // ★追加：表示中のページだけ、画面サイズに合わせて再計算
+    window.addEventListener("resize", () => {
+        requestAnimationFrame(() => {
+            if (topPage.style.display !== "none") {
+                fitTopPageText();
+            } else {
+                fitQuizPageText();
+            }
+        });
+    });
+
     console.log(records);
     //トップページの準備
     function setTopPage() {
@@ -498,9 +515,20 @@
     function switchPage(isTop) {
         topPage.style.display = isTop ? "flex" : "none";
         quizPage.style.display = isTop ? "none" : "flex";
-        if (isTop === false) {
+
+        if (isTop) {
+            // ★変更：トップ画面を表示してからサイズを測る
+            requestAnimationFrame(() => {
+                fitTopPageText();
+            });
+        } else {
             document.getElementsByClassName("keydelete")[0].textContent = "けす";
             document.getElementsByClassName("keyok")[0].textContent = "OK";
+
+            // ★追加：問題画面を表示してからサイズを測る
+            requestAnimationFrame(() => {
+                fitQuizPageText();
+            });
         }
     }
 
@@ -544,11 +572,13 @@
         //ミステリー判定
         if (button.id.startsWith("btn_mystery")) {
             equal.textContent = "▢=";
-            fitText(equal);
         } else {
             equal.textContent = "=";
             equal.style.fontSize = "clamp(20px,30vmin,154px)";
         }
+
+        // ★変更：通常問題・ミステリーの両方を調整
+        fitText(equal);
         //回答欄クリア
         answer.textContent = "";
         //正解表示欄クリア
@@ -578,6 +608,11 @@
         nowModeButton = button;
         //キーボード入力受付開始
         startTenkey();
+
+        // ★追加：表示内容をすべて設定した後に問題画面を調整
+        requestAnimationFrame(() => {
+            fitQuizPageText();
+        });
     }
 
     //menu buttonクリック時の動作
@@ -622,6 +657,8 @@
     function updateCountUp() {
         elapsed = Math.floor((Date.now() - startTime) / 1000);
         time_display.textContent = formatTime(elapsed);
+        // ★追加
+        fitText(time_display);
     }
 
     //タイマーカウントダウン関数
@@ -634,6 +671,8 @@
     function updateCountDown() {
         const remain_time = Math.max(0, Math.ceil((endTime - Date.now()) / 1000));
         time_display.textContent = formatTime(remain_time);
+        // ★追加
+        fitText(time_display);
         if (remain_time === 0) {
             //終了処理
             finishChallenge(true);
@@ -823,19 +862,27 @@
     function inputTenkey(btntext) {
         if (btntext === "けす") {
             answer.textContent = "";
+            // ★追加：空になった答え欄を基準サイズへ戻す
+            fitText(answer);
         } else if (btntext === "OK") {
             if (answer.textContent === "") return;
             if (CheckAnswer()) {
                 switchResultImage("maru");
                 //答えを空に
                 answer.textContent = "";
+                // ★追加：空になった答え欄を元の基準サイズへ戻す
+                fitText(answer);
                 //問題数表示
                 const labelTxt = document.getElementById("remain_label").textContent;
                 if (labelTxt === "いま") {
                     remain_number.textContent = formatNumber(Number(toHalfWidth(remain_number.textContent)) + 1);
+                    // ★追加
+                    fitText(remain_number);
 
                 } else if (labelTxt === "のこり") {
                     remain_number.textContent = formatNumber(Number(toHalfWidth(remain_number.textContent)) - 1);
+                    // ★追加
+                    fitText(remain_number);
                 }
                 //次の問題番号へ
                 nowQnum++;
@@ -865,6 +912,8 @@
             if (!CanInputByKeyboard) { return; }
             if (answer.textContent.length <= 1) {
                 answer.textContent = answer.textContent + btntext;
+                // ★追加：入力文字に合わせて答え欄を再調整
+                fitText(answer);
             }
         }
     }
@@ -891,8 +940,14 @@
             button.disabled = true;
         });
         //ボタン表示変更
-        document.getElementsByClassName("keydelete")[0].textContent = "おわる";
-        document.getElementsByClassName("keyok")[0].textContent = "また";
+        const keyDelete = document.getElementsByClassName("keydelete")[0];
+        const keyOk = document.getElementsByClassName("keyok")[0];
+        keyDelete.textContent = "おわる";
+        keyOk.textContent = "また";
+
+        // ★変更：文字が変わった後でも、枠に入るサイズへ再調整
+        fitText(keyDelete, 0.1, 80);
+        fitText(keyOk, 0.1, 80);
     }
 
     //開始時のテンキー動作制限解除
@@ -903,8 +958,14 @@
             button.disabled = false;
         });
         //ボタン表示変更
-        document.getElementsByClassName("keydelete")[0].textContent = "けす";
-        document.getElementsByClassName("keyok")[0].textContent = "OK";
+        const keyDelete = document.getElementsByClassName("keydelete")[0];
+        const keyOk = document.getElementsByClassName("keyok")[0];
+        keyDelete.textContent = "けす";
+        keyOk.textContent = "OK";
+
+        // ★変更：文字が変わった後でも、枠に入るサイズへ再調整
+        fitText(keyDelete, 0.1, 80);
+        fitText(keyOk, 0.1, 80);
     }
 
     //キーボード制御
@@ -1291,18 +1352,124 @@
         return "";
     }
 
-    //文字サイズの自動調整
-    function fitText(div) {
-        let size = parseFloat(getComputedStyle(div).fontSize);
-        div.style.fontSize = size + "px";
-        while (
-            (div.scrollWidth > div.clientWidth ||
-                div.scrollHeight > div.clientHeight) &&
-            size > 16
-        ) {
-            size--;
-            div.style.fontSize = size + "px";
+    // ==================================================
+    // ★変更：文字サイズの自動調整
+    // 枠に収まる最大サイズを、小数pxまで含めて探します。
+    // ==================================================
+    function fitText(div, minSize = 0.1, maxSize = null) {
+        if (!div) return;
+
+        // 非表示の要素は正しくサイズを測れない
+        if (div.clientWidth === 0 || div.clientHeight === 0) return;
+
+        // 初回だけ、元のfont-size指定を保存
+        if (!div.dataset.fitBaseFontSize) {
+            const styles = getComputedStyle(div);
+            const customBase = styles.getPropertyValue("--fit-base-font-size").trim();
+
+            if (customBase) {
+                div.dataset.fitBaseFontSize = customBase;
+            } else if (div.style.fontSize) {
+                div.dataset.fitBaseFontSize = div.style.fontSize;
+            } else {
+                div.dataset.fitBaseFontSize = styles.fontSize;
+            }
         }
+
+        // ★追加：行ボックスを文字サイズに合わせる
+        // line-height: normal のままだと、日本語の上下が見切れることがあります。
+        div.style.lineHeight = "1.05";
+
+        // 最大サイズを決める
+        if (maxSize === null) {
+            div.style.fontSize = div.dataset.fitBaseFontSize;
+            maxSize = parseFloat(getComputedStyle(div).fontSize);
+        } else {
+            div.style.fontSize = `${maxSize}px`;
+        }
+
+        if (!Number.isFinite(maxSize) || maxSize <= 0) return;
+
+        let low = minSize;
+        let high = maxSize;
+
+        // 小数pxまで含めて二分探索
+        for (let i = 0; i < 30; i++) {
+            const size = (low + high) / 2;
+            div.style.fontSize = `${size}px`;
+
+            const isFit =
+                div.scrollWidth <= div.clientWidth &&
+                div.scrollHeight <= div.clientHeight;
+
+            if (isFit) {
+                low = size;
+            } else {
+                high = size;
+            }
+        }
+
+        div.style.fontSize = `${low}px`;
+    }
+
+    // ==================================================
+    // ★追加：トップ画面の文字サイズを調整
+    // ==================================================
+    function fitTopPageText() {
+        const textElements = [...document.querySelectorAll("#top-page *")]
+            .filter(element =>
+                element.children.length === 0 &&
+                element.textContent.trim() !== "" &&
+                getComputedStyle(element).display !== "none"
+            );
+
+        textElements.forEach(element => {
+            element.style.whiteSpace = "nowrap";
+            element.style.overflow = "hidden";
+            element.style.minWidth = "0";
+            element.style.minHeight = "0";
+
+            fitText(element);
+        });
+    }
+
+    // ==================================================
+    // ★追加：問題画面の文字サイズを調整
+    // ==================================================
+    function fitQuizPageText() {
+        const textElements = [
+            document.getElementById("quiz"),
+            document.getElementById("equal"),
+            document.getElementById("answer"),
+            document.getElementById("remain_label"),
+            document.getElementById("remain_number"),
+            document.getElementById("remain_unit"),
+            document.getElementById("time_label"),
+            document.getElementById("time_display"),
+            document.getElementById("correct_label"),
+            document.getElementById("correct_display")
+        ];
+
+        textElements.forEach(element => {
+            if (!element) return;
+
+            element.style.whiteSpace = "nowrap";
+            element.style.overflow = "hidden";
+            element.style.minWidth = "0";
+            element.style.minHeight = "0";
+
+            fitText(element);
+        });
+
+        // ★追加：テンキー
+        document.querySelectorAll("#keypad button").forEach(button => {
+            button.style.whiteSpace = "nowrap";
+            button.style.overflow = "hidden";
+            button.style.minWidth = "0";
+            button.style.minHeight = "0";
+
+            fitText(button, 0.1, 80);
+        });
     }
 
     //ok音を鳴らす（待たない）
