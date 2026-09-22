@@ -641,4 +641,147 @@
             }
         }
     }
+
+
+    // =========================================================
+    // 画面サイズに応じた文字サイズ調整
+    // レイアウトは変えず、各要素の「実際の表示領域」に文字を収めます。
+    //
+    // ★重要
+    // 文字そのものが幅・高さを決めている要素（タイトル、残り問題数、
+    // 「のこり」「もん」）にはfitText()を直接かけません。
+    // これらはCSSのclamp()でサイズを決めます。
+    // =========================================================
+
+    let responsiveFitRaf = null;
+
+    function fitText(element, options = {}) {
+        if (!element) return;
+
+        const multiLine = options.multiLine === true;
+        const minSize = Number.isFinite(options.minSize) ? options.minSize : 1;
+
+        const width = element.clientWidth;
+        const height = element.clientHeight;
+        if (width <= 0 || height <= 0) return;
+
+        // 元のCSSによるサイズを取得するため、前回のinline指定をいったん外す
+        element.style.fontSize = "";
+
+        const baseSize = parseFloat(getComputedStyle(element).fontSize);
+        if (!Number.isFinite(baseSize) || baseSize <= 0) return;
+
+        element.style.lineHeight = multiLine ? "1.08" : "1.05";
+        element.style.whiteSpace = multiLine ? "pre-line" : "nowrap";
+        element.style.overflow = "hidden";
+        element.style.minWidth = "0";
+        element.style.minHeight = "0";
+
+        const fits = () => {
+            return element.scrollWidth <= element.clientWidth + 1 &&
+                   element.scrollHeight <= element.clientHeight + 1;
+        };
+
+        element.style.fontSize = `${baseSize}px`;
+        if (fits()) return;
+
+        let low = minSize;
+        let high = baseSize;
+
+        for (let i = 0; i < 28; i++) {
+            const mid = (low + high) / 2;
+            element.style.fontSize = `${mid}px`;
+
+            if (fits()) {
+                low = mid;
+            } else {
+                high = mid;
+            }
+        }
+
+        element.style.fontSize = `${low}px`;
+    }
+
+    function fitTopPageText() {
+        // ★タイトルはfitTextしない
+        // #titleは「文字自身が幅を決める」構造なので、fitTextをかけると
+        // 測定幅まで小さくなってしまうため。CSSのclamp()をそのまま使う。
+
+        // タイトル以外は、ボックスのサイズが決まっているのでfitText可能
+        document.querySelectorAll("#subtitle > span").forEach(el => fitText(el));
+
+        document.querySelectorAll(
+            "#buttons .button-label1, #buttons .button-label2, #buttons .button-label3, #buttons .button-label4"
+        ).forEach(el => fitText(el));
+
+        document.querySelectorAll("#buttons .trophyLabel").forEach(el => fitText(el));
+        document.querySelectorAll("#buttons [id^='challenge']").forEach(el => fitText(el));
+
+        // 音声ボタンはサイズが固定されているため安全
+        fitText(document.getElementById("btnSound"), { minSize: 6 });
+    }
+
+    function fitQuizPageText() {
+        const center = document.getElementById("center");
+        const remainTime = document.getElementById("remain_time");
+        const mark = document.getElementById("mark_label");
+        const message = document.getElementById("message_label");
+
+        // 中央の問題・結果表示
+        fitText(center, { multiLine: true });
+
+        // 左側のタイマーだけfitText
+        // 「のこり」「もん」「残り問題数」はCSSのclamp()で調整する
+        // （文字自身の大きさが要素の幅になっているためfitTextしない）
+        fitText(remainTime);
+
+        // 右側の○×・正解式
+        fitText(mark);
+        fitText(message, { multiLine: true });
+
+        // 0～19の回答ボタン
+        document.querySelectorAll(".answerBtn").forEach(el => fitText(el));
+    }
+
+    function fitAllResponsiveText() {
+        fitTopPageText();
+        fitQuizPageText();
+    }
+
+    function scheduleResponsiveFit() {
+        if (responsiveFitRaf !== null) return;
+        responsiveFitRaf = requestAnimationFrame(() => {
+            responsiveFitRaf = null;
+            fitAllResponsiveText();
+        });
+    }
+
+    function setupResponsiveTextFitting() {
+        const topPage = document.getElementById("top-page");
+        const quizPage = document.getElementById("quiz-page");
+
+        scheduleResponsiveFit();
+
+        window.addEventListener("resize", scheduleResponsiveFit);
+
+        if ("ResizeObserver" in window) {
+            const resizeObserver = new ResizeObserver(scheduleResponsiveFit);
+            if (topPage) resizeObserver.observe(topPage);
+            if (quizPage) resizeObserver.observe(quizPage);
+        }
+
+        // 問題文・結果文・残り問題数などの変更時に自動調整
+        // ※残り問題数はfitText対象ではないが、他の表示変更も拾うため監視する
+        const mutationObserver = new MutationObserver(scheduleResponsiveFit);
+        const observerOptions = {
+            childList: true,
+            characterData: true,
+            subtree: true
+        };
+        if (topPage) mutationObserver.observe(topPage, observerOptions);
+        if (quizPage) mutationObserver.observe(quizPage, observerOptions);
+    }
+
+    setupResponsiveTextFitting();
+
 }
