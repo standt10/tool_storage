@@ -351,3 +351,73 @@ body {
 .invisible {
   display: none;
 }
+
+#top-page,
+#quiz-page,
+#top-page > *,
+#quiz-page > *,
+#buttons,
+#left,
+#center,
+#right,
+#btn1,
+#btn2 {
+    min-width: 0;
+    min-height: 0;
+}
+
+/* 1行で表示する要素 */
+#title,
+#subtitle,
+.responsive-title-text,
+#buttons .button-label1,
+#buttons .button-label2,
+#buttons .button-label3,
+#buttons .button-label4,
+#buttons .trophyLabel,
+#buttons [id^="challenge"],
+#remain_time,
+#remain_quiz_num,
+#remain_quiz_label_top_left,
+#remain_quiz_label_bottom_right,
+#mark_label,
+.answerBtn,
+#btnSound {
+    min-width: 0;
+    min-height: 0;
+    white-space: nowrap;
+    overflow: hidden;
+    line-height: 1.05;
+    box-sizing: border-box;
+}
+
+/* titleの文字部分 */
+.responsive-title-text {
+    display: inline-block;
+    max-width: 100%;
+}
+
+/* 問題・結果メッセージは改行を維持 */
+#center,
+#message_label {
+    min-width: 0;
+    min-height: 0;
+    white-space: pre-line;
+    overflow: hidden;
+    line-height: 1.08;
+    box-sizing: border-box;
+}
+
+/* 答えボタンは文字がセルを押し広げないようにする */
+
+#title {
+    line-height: 1.05;
+    box-sizing: border-box;
+}
+
+#remain_quiz_num,
+#remain_quiz_label_top_left,
+#remain_quiz_label_bottom_right {
+    line-height: 1.05;
+    box-sizing: border-box;
+}
