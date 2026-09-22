@@ -110,7 +110,7 @@
     // title
     const title = document.createElement("div");
     title.id = "title";
-    title.textContent = "わり算の筆算くん　（４けたまで）÷（３けたまで）";
+    title.textContent = "わり算の筆算 シミュレータ　（４けたまで）÷（３けたまで）";
     left.appendChild(title);
 
     //左上
@@ -130,6 +130,7 @@
     input1.max = 9999;
     input1.step = 1;
     input1.addEventListener("input", checkInputs);
+    input1.addEventListener("input", scheduleFitResponsiveText);
     input1.addEventListener("blur", checkInputsNum);
     const label2 = document.createElement("div");
     label2.id = "label2";
@@ -143,6 +144,7 @@
     input2.max = 999;
     input2.step = 1;
     input2.addEventListener("input", checkInputs);
+    input2.addEventListener("input", scheduleFitResponsiveText);
     input2.addEventListener("blur", checkInputsNum);
 
     left_top.appendChild(label1);
@@ -1169,5 +1171,151 @@
         }
     }
 
-}
+    // =========================================================
+    // 画面サイズに応じた文字サイズ調整
+    // レイアウトは変更せず、「実際の表示領域」に合わせて文字だけ縮小します。
+    // =========================================================
 
+    let fitResponsiveRaf = null;
+
+    // 文字を要素の中に収める
+    function fitText(element, minSize = 0.1, isMultiLine = false) {
+        if (!element) return;
+
+        const width = element.clientWidth;
+        const height = element.clientHeight;
+        if (width <= 0 || height <= 0) return;
+
+        // 元のCSSによるサイズを毎回取り直すため、いったんinline指定を外す
+        const originalFontSize = element.style.fontSize;
+        element.style.fontSize = "";
+
+        const baseSize = parseFloat(getComputedStyle(element).fontSize);
+        if (!Number.isFinite(baseSize) || baseSize <= 0) {
+            element.style.fontSize = originalFontSize;
+            return;
+        }
+
+        // 文字が要素のサイズを押し広げないようにする
+        element.style.minWidth = "0";
+        element.style.minHeight = "0";
+        element.style.overflow = "hidden";
+        element.style.boxSizing = "border-box";
+        element.style.lineHeight = isMultiLine ? "1.15" : "1.05";
+
+        if (isMultiLine) {
+            // textContent中の改行を残しつつ、長い説明文は折り返す
+            element.style.whiteSpace = "pre-line";
+        } else {
+            element.style.whiteSpace = "nowrap";
+        }
+
+        // まず基準サイズで表示してから、収まる最大値を二分探索する
+        let low = minSize;
+        let high = baseSize;
+
+        for (let i = 0; i < 28; i++) {
+            const size = (low + high) / 2;
+            element.style.fontSize = `${size}px`;
+
+            const fits = isMultiLine
+                ? element.scrollHeight <= element.clientHeight + 1
+                : element.scrollWidth <= element.clientWidth + 1 &&
+                  element.scrollHeight <= element.clientHeight + 1;
+
+            if (fits) {
+                low = size;
+            } else {
+                high = size;
+            }
+        }
+
+        element.style.fontSize = `${low}px`;
+    }
+
+    // inputはスクロール量だけでは判定しにくいため、幅・高さから直接決める
+    function fitInputText(element, maxDigits) {
+        if (!element) return;
+        if (element.clientWidth <= 0 || element.clientHeight <= 0) return;
+
+        const originalFontSize = element.style.fontSize;
+        element.style.fontSize = "";
+
+        const baseSize = parseFloat(getComputedStyle(element).fontSize);
+        const value = String(element.value ?? "");
+        const digitCount = Math.max(maxDigits, value.length, 1);
+
+        if (!Number.isFinite(baseSize) || baseSize <= 0) {
+            element.style.fontSize = originalFontSize;
+            return;
+        }
+
+        // 数字が4桁/3桁でも横にはみ出さないようにする
+        const widthSize = element.clientWidth / (digitCount * 0.62);
+        const heightSize = element.clientHeight * 0.62;
+        const size = Math.max(0.1, Math.min(baseSize, widthSize, heightSize));
+
+        element.style.boxSizing = "border-box";
+        element.style.minWidth = "0";
+        element.style.minHeight = "0";
+        element.style.fontSize = `${size}px`;
+        element.style.lineHeight = "1";
+    }
+
+    // アプリ全体の文字サイズをまとめて調整
+    function fitResponsiveText() {
+        // タイトル・見出し・ボタン類（1行）
+        const singleLineSelectors = [
+            "#title",
+            ".left_top_label",
+            ".heading",
+            ".btn_middle",
+            "#btnNext",
+            ".input_button",
+            ".square"
+        ];
+
+        singleLineSelectors.forEach(selector => {
+            document.querySelectorAll(selector).forEach(element => {
+                fitText(element, 0.1, false);
+            });
+        });
+
+        // 下部の説明文は、改行を残したまま高さに合わせて縮小
+        fitText(text_bottom, 0.1, true);
+
+        // 式入力欄
+        fitInputText(input1, 4);
+        fitInputText(input2, 3);
+    }
+
+    // 連続した変更を1回の再計算にまとめる
+    function scheduleFitResponsiveText() {
+        if (fitResponsiveRaf !== null) return;
+
+        fitResponsiveRaf = requestAnimationFrame(() => {
+            fitResponsiveRaf = null;
+            fitResponsiveText();
+        });
+    }
+
+    // textContentの変更（説明文・ボタン・筆算の数字など）を自動検知
+    const responsiveTextObserver = new MutationObserver(() => {
+        scheduleFitResponsiveText();
+    });
+
+    responsiveTextObserver.observe(wrapper, {
+        subtree: true,
+        childList: true,
+        characterData: true
+    });
+
+    // ウィンドウサイズ変更時にも再計算
+    window.addEventListener("resize", scheduleFitResponsiveText);
+
+    // 初回表示
+    requestAnimationFrame(() => {
+        fitResponsiveText();
+    });
+
+}
