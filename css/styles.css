@@ -13,11 +13,14 @@ body {
     font-size: clamp(1.5rem, 8vw, 12vh);
     height: 14vh;
     margin-bottom: 7vh;
+    white-space: nowrap;
+    overflow: hidden;
+    box-sizing: border-box;
 }
 
 #buttons {
     display: grid;
-    grid-template-columns: repeat(5, 1fr);  
+    grid-template-columns: repeat(5, 1fr);
     gap: 2%;
     width: 100%;
     box-sizing: border-box;
@@ -34,6 +37,17 @@ body {
     border-radius: 2%;
     cursor: pointer;
     text-decoration: none;
+
+    /* 文字を必ず1行にする */
+    white-space: nowrap;
+    overflow: hidden;
+
+    /* Grid内で必要以上に広がらないようにする */
+    min-width: 0;
+    box-sizing: border-box;
+
+    /* 長い文字でも縦位置を安定させる */
+    line-height: 1.05;
 }
 
 .aWhite {
@@ -52,6 +66,6 @@ body {
     color: rgb(240, 235, 225);
 }
 
-.aBlack:hover{
+.aBlack:hover {
     background: black;
 }
