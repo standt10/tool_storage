@@ -264,3 +264,39 @@ input[type="number"]::-webkit-inner-spin-button {
 .invisible {
     visibility: hidden;
 }
+
+#title,
+.left_top_label,
+.heading,
+.btn_middle,
+#btnNext,
+.input_button,
+.square,
+#text_bottom {
+    min-width: 0;
+    min-height: 0;
+    overflow: hidden;
+}
+
+#title,
+.left_top_label,
+.heading,
+.btn_middle,
+#btnNext,
+.input_button,
+.square {
+    white-space: nowrap;
+    line-height: 1.05;
+}
+
+#text_bottom {
+    white-space: pre-line;
+    line-height: 1.15;
+}
+
+#input1,
+#input2 {
+    box-sizing: border-box;
+    min-width: 0;
+    min-height: 0;
+}
